@@ -1,0 +1,2872 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBTI-64 擴展人格測驗 (Premium Edition v6)</title>
+    <meta property="og:title" content="MBTI-64 擴展人格測驗 (Premium Edition)">
+    <meta property="og:description" content="超越傳統 16 型人格框架，引入「決策模式」與「待人態度」。解鎖 64 種深層人格面貌與專屬發展法則。">
+    <meta name="description" content="超越傳統 16 型人格框架，引入「決策模式」與「待人態度」。解鎖 64 種深層人格面貌與專屬發展法則。">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200&auto=format&fit=crop">
+    <meta name="twitter:card" content="summary_large_image">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    
+    
+
+    <!-- 動態載入 jsPDF (僅在需要時) -->
+    <script>
+    function loadJsPDF() {
+        if (window.jspdf) return Promise.resolve();
+        return new Promise((resolve, reject) => {
+            const s = document.createElement('script');
+            s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+            s.onload = resolve;
+            s.onerror = reject;
+            document.head.appendChild(s);
+        });
+    }
+    </script>
+
+    <style>
+        .export-vertical {
+            width: 540px !important;
+            min-height: 960px !important;
+            margin: 0 auto;
+            background: #0f172a;
+        }
+    </style>
+  <script type="module" crossorigin src="./assets/index-DK9zR9Ob.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-D7uP5on3.css">
+</head>
+<body class="min-h-screen flex items-start md:items-center justify-center p-4 md:p-6 text-slate-200 overflow-y-auto" data-theme="dark">
+    <!-- #10 a11y: 跳轉至主內容 -->
+    <a href="#app-container" class="skip-link">跳至主要內容</a>
+
+    <!-- 主題切換按鈕 (v7: 三態循環 dark → light → oled) -->
+    <button id="theme-toggle" onclick="(window.MBTI64Utils&&MBTI64Utils.cycleTheme)?MBTI64Utils.cycleTheme():toggleTheme()" class="theme-toggle fixed top-4 right-4 z-50 w-10 h-10 rounded-full glass-panel flex items-center justify-center text-slate-300 hover:text-cyan-300 transition-colors shadow-lg" aria-label="切換深色/淺色/OLED 主題" title="切換主題（深色/淺色/OLED）">
+        <svg id="theme-icon-dark" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+        <svg id="theme-icon-light" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+    </button>
+
+    <div id="app-container" class="glass-panel rounded-3xl shadow-2xl w-full max-w-2xl relative min-h-[600px] md:max-h-[90vh] flex flex-col overflow-hidden my-4 md:my-0">
+
+        <div id="screen-start" class="p-6 md:p-10 text-center flex-1 flex flex-col justify-start overflow-y-auto custom-scrollbar fade-in-up pt-8 md:pt-10 relative">
+            <!-- 動態粒子背景 -->
+            <div class="hero-particles">
+                <div class="orb"></div>
+                <div class="orb"></div>
+                <div class="orb"></div>
+            </div>
+
+            <div class="inline-block px-4 py-1 rounded-full glass-panel text-cyan-300 text-xs font-bold tracking-widest uppercase mb-6 mx-auto relative z-10">Premium Assessment</div>
+            
+            <h1 onclick="revealAdmin()" class="text-5xl md:text-6xl font-black hero-title-shimmer mb-4 drop-shadow-sm cursor-default relative z-10">MBTI-64</h1>
+            <h2 class="text-2xl md:text-3xl font-semibold mb-6 text-slate-100 relative z-10">擴展人格測驗</h2>
+            <p class="text-slate-400 mb-8 text-base md:text-lg leading-relaxed max-w-lg mx-auto font-light relative z-10">
+                超越傳統 16 型人格框架。引入「決策模式」與「待人態度」兩個全新維度，從 120 題題庫隨機抽取 72 題。解鎖 64 種深層人格面貌、專屬成長法則、配對分析、團隊診斷與成長軌跡追蹤。
+            </p>
+            
+            <div class="max-w-sm mx-auto mb-6 w-full">
+                <input type="text" id="user-name-input" aria-label="請輸入您的姓名或暱稱" placeholder="請輸入您的姓名或暱稱 (選填)" class="w-full bg-slate-800/50 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition-all text-center text-lg">
+            </div>
+
+            <button id="start-btn" onclick="startQuiz()" class="btn-pulse-glow bg-gradient-to-r from-cyan-500 to-indigo-500 text-white font-bold py-4 px-8 rounded-2xl hover:from-cyan-400 hover:to-indigo-400 transition-all duration-300 w-full max-w-sm mx-auto shadow-[0_0_20px_rgba(56,189,248,0.3)] hover:shadow-[0_0_30px_rgba(56,189,248,0.5)] text-lg tracking-wide mb-3 relative z-10">
+                開始探索
+            </button>
+
+            <button id="resume-btn" onclick="resumeQuiz()" class="hidden bg-slate-800/80 text-cyan-300 border border-cyan-500/30 font-semibold py-3 px-8 rounded-xl hover:bg-slate-700 transition-all duration-300 w-full max-w-sm mx-auto text-sm tracking-wide mb-3">
+                接續未完成的測驗
+            </button>
+
+            <button id="quick-quiz-btn" onclick="if(window.QuickQuizModule)QuickQuizModule.startQuickQuiz();else alert('模組載入中...')" class="bg-slate-800/60 text-indigo-300 border border-indigo-500/30 font-semibold py-3 px-8 rounded-xl hover:bg-slate-700 transition-all duration-300 w-full max-w-sm mx-auto text-sm tracking-wide mb-3">
+                ⚡ 快速版 (18 題 · 約 3 分鐘)
+            </button>
+
+            <!-- 應用程式中心 (App Center) -->
+            <div class="app-center-container mt-6 mx-auto relative z-10 w-full max-w-4xl px-2 mb-8">
+                
+                <!-- 📋 個人數據與回顧 -->
+                <div class="app-category-title text-sm font-bold text-slate-400 mb-3 mt-4 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    個人數據與回顧
+                </div>
+                <div class="app-grid grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <div class="app-card flex items-center gap-3 p-3 glass-panel rounded-xl cursor-pointer hover:bg-slate-700/50 transition-colors" onclick="showHistory()">
+                        <div class="app-icon w-10 h-10 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div class="app-info overflow-hidden">
+                            <div class="app-title text-sm font-bold text-white truncate">測驗紀錄</div>
+                            <div class="app-desc text-[10px] text-slate-400 truncate">查看過往完整的測驗數據</div>
+                        </div>
+                    </div>
+                    <div class="app-card flex items-center gap-3 p-3 glass-panel rounded-xl cursor-pointer hover:bg-slate-700/50 transition-colors" onclick="if(window.TimelineModule)TimelineModule.renderTimelineScreen();else alert('請先完成至少一次測驗')">
+                        <div class="app-icon w-10 h-10 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                        </div>
+                        <div class="app-info overflow-hidden">
+                            <div class="app-title text-sm font-bold text-white truncate">成長軌跡</div>
+                            <div class="app-desc text-[10px] text-slate-400 truncate">追蹤歷次測驗的人格演化</div>
+                        </div>
+                    </div>
+                    <div class="app-card flex items-center gap-3 p-3 glass-panel rounded-xl cursor-pointer hover:bg-slate-700/50 transition-colors" onclick="if(window.JournalModule)JournalModule.renderJournalScreen();else alert('模組載入中...')">
+                        <div class="app-icon w-10 h-10 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        </div>
+                        <div class="app-info overflow-hidden">
+                            <div class="app-title text-sm font-bold text-white truncate">成長日記</div>
+                            <div class="app-desc text-[10px] text-slate-400 truncate">紀錄每日心得與性格關聯</div>
+                        </div>
+                    </div>
+                    <div class="app-card flex items-center gap-3 p-3 glass-panel rounded-xl cursor-pointer hover:bg-slate-700/50 transition-colors" onclick="if(window.TimeCapsuleModule)TimeCapsuleModule.renderCapsuleScreen();else alert('模組載入中...')">
+                        <div class="app-icon w-10 h-10 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div class="app-info overflow-hidden">
+                            <div class="app-title text-sm font-bold text-white truncate">時光膠囊</div>
+                            <div class="app-desc text-[10px] text-slate-400 truncate">寫給未來自己的性格信件</div>
+                        </div>
+                    </div>
+                    <div class="app-card flex items-center gap-3 p-3 glass-panel rounded-xl cursor-pointer hover:bg-slate-700/50 transition-colors" onclick="if(window.AchievementsModule)AchievementsModule.renderAchievementsScreen();else alert('模組載入中...')">
+                        <div class="app-icon w-10 h-10 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                        </div>
+                        <div class="app-info overflow-hidden">
+                            <div class="app-title text-sm font-bold text-white truncate">成就殿堂</div>
+                            <div class="app-desc text-[10px] text-slate-400 truncate">收集專屬的探索徽章</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 🔍 深度探索 -->
+                <div class="app-category-title text-sm font-bold text-slate-400 mb-3 mt-6 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    深度探索
+                </div>
+                <div class="app-grid grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <div class="app-card flex items-center gap-3 p-3 glass-panel rounded-xl cursor-pointer hover:bg-slate-700/50 transition-colors" onclick="if(window.GalleryModule)GalleryModule.renderGalleryScreen();else alert('模組載入中...')">
+                        <div class="app-icon w-10 h-10 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2z"></path></svg>
+                        </div>
+                        <div class="app-info overflow-hidden">
+                            <div class="app-title text-sm font-bold text-white truncate">64型圖鑑</div>
+                            <div class="app-desc text-[10px] text-slate-400 truncate">完整瀏覽擴展人格類型</div>
+                        </div>
+                    </div>
+                    <div class="app-card flex items-center gap-3 p-3 glass-panel rounded-xl cursor-pointer hover:bg-slate-700/50 transition-colors" onclick="if(window.EvolutionMapModule)EvolutionMapModule.renderEvolutionScreen();else alert('請先完成至少一次測驗')">
+                        <div class="app-icon w-10 h-10 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                        </div>
+                        <div class="app-info overflow-hidden">
+                            <div class="app-title text-sm font-bold text-white truncate">演化地圖</div>
+                            <div class="app-desc text-[10px] text-slate-400 truncate">查看潛在的發展與變化</div>
+                        </div>
+                    </div>
+                    <div class="app-card flex items-center gap-3 p-3 glass-panel rounded-xl cursor-pointer hover:bg-slate-700/50 transition-colors" onclick="if(window.SimulatorModule)SimulatorModule.renderSimulatorScreen();else alert('模組載入中...')">
+                        <div class="app-icon w-10 h-10 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                        </div>
+                        <div class="app-info overflow-hidden">
+                            <div class="app-title text-sm font-bold text-white truncate">模擬器</div>
+                            <div class="app-desc text-[10px] text-slate-400 truncate">模擬變成另一種性格</div>
+                        </div>
+                    </div>
+                    <div class="app-card flex items-center gap-3 p-3 glass-panel rounded-xl cursor-pointer hover:bg-slate-700/50 transition-colors" onclick="if(window.CrossTheoryModule){const h=(window.MBTI64Utils&&window.MBTI64Utils.safeLocalGetJSON)?window.MBTI64Utils.safeLocalGetJSON('mbti64_history',[]):[];const c=h[0]?(h[0].fullCode||h[0].mbtiType||''):'INTJ';CrossTheoryModule.renderCrossTheoryScreen(c)}else alert('模組載入中...')">
+                        <div class="app-icon w-10 h-10 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div class="app-info overflow-hidden">
+                            <div class="app-title text-sm font-bold text-white truncate">跨理論對照</div>
+                            <div class="app-desc text-[10px] text-slate-400 truncate">結合九型人格深入解析</div>
+                        </div>
+                    </div>
+                    <div class="app-card flex items-center gap-3 p-3 glass-panel rounded-xl cursor-pointer hover:bg-slate-700/50 transition-colors" onclick="if(window.PDFReportModule)PDFReportModule.renderReportScreen();else alert('模組載入中...')">
+                        <div class="app-icon w-10 h-10 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        </div>
+                        <div class="app-info overflow-hidden">
+                            <div class="app-title text-sm font-bold text-white truncate">匯出 PDF</div>
+                            <div class="app-desc text-[10px] text-slate-400 truncate">產出完整 30 頁深度報告</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 🤖 AI 專屬助理 -->
+                <div class="app-category-title text-sm font-bold text-slate-400 mb-3 mt-6 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    AI 專屬助理
+                </div>
+                <div class="app-grid grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <div class="app-card flex items-center gap-3 p-3 glass-panel rounded-xl cursor-pointer hover:bg-slate-700/50 transition-colors border-fuchsia-500/30 shadow-[0_0_10px_rgba(217,70,239,0.1)]" onclick="if(window.AICoachModule)AICoachModule.renderCoachScreen();else alert('模組載入中...')">
+                        <div class="app-icon w-10 h-10 rounded-lg bg-fuchsia-500/20 text-fuchsia-400 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        </div>
+                        <div class="app-info overflow-hidden">
+                            <div class="app-title text-sm font-bold text-fuchsia-300 truncate">AI 教練</div>
+                            <div class="app-desc text-[10px] text-slate-400 truncate">針對盲點提供專屬對話</div>
+                        </div>
+                    </div>
+                    <div class="app-card flex items-center gap-3 p-3 glass-panel rounded-xl cursor-pointer hover:bg-slate-700/50 transition-colors" onclick="if(window.AITwinModule)AITwinModule.renderTwinScreen();else alert('模組載入中...')">
+                        <div class="app-icon w-10 h-10 rounded-lg bg-fuchsia-500/20 text-fuchsia-400 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                        </div>
+                        <div class="app-info overflow-hidden">
+                            <div class="app-title text-sm font-bold text-white truncate">AI 分身</div>
+                            <div class="app-desc text-[10px] text-slate-400 truncate">創造擁有你性格的替身</div>
+                        </div>
+                    </div>
+                    <div class="app-card flex items-center gap-3 p-3 glass-panel rounded-xl cursor-pointer hover:bg-slate-700/50 transition-colors" onclick="if(window.CareerMapModule)CareerMapModule.renderCareerScreen();else alert('模組載入中...')">
+                        <div class="app-icon w-10 h-10 rounded-lg bg-fuchsia-500/20 text-fuchsia-400 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <div class="app-info overflow-hidden">
+                            <div class="app-title text-sm font-bold text-white truncate">職涯推薦</div>
+                            <div class="app-desc text-[10px] text-slate-400 truncate">分析優勢與合適職業</div>
+                        </div>
+                    </div>
+                    <div class="app-card flex items-center gap-3 p-3 glass-panel rounded-xl cursor-pointer hover:bg-slate-700/50 transition-colors" onclick="if(window.DecisionSim2)DecisionSim2.renderSimScreen();else alert('模組載入中...')">
+                        <div class="app-icon w-10 h-10 rounded-lg bg-fuchsia-500/20 text-fuchsia-400 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                        </div>
+                        <div class="app-info overflow-hidden">
+                            <div class="app-title text-sm font-bold text-white truncate">決策模擬</div>
+                            <div class="app-desc text-[10px] text-slate-400 truncate">模擬你面對兩難的選擇</div>
+                        </div>
+                    </div>
+                    <div class="app-card flex items-center gap-3 p-3 glass-panel rounded-xl cursor-pointer hover:bg-slate-700/50 transition-colors" onclick="if(window.MeditationModule)MeditationModule.renderMeditationScreen();else alert('模組載入中...')">
+                        <div class="app-icon w-10 h-10 rounded-lg bg-fuchsia-500/20 text-fuchsia-400 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div class="app-info overflow-hidden">
+                            <div class="app-title text-sm font-bold text-white truncate">冥想放鬆</div>
+                            <div class="app-desc text-[10px] text-slate-400 truncate">為你量身打造的放鬆音效</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 👥 社交與團隊互動 -->
+                <div class="app-category-title text-sm font-bold text-slate-400 mb-3 mt-6 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    社交與團隊互動
+                </div>
+                <div class="app-grid grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <div class="app-card flex items-center gap-3 p-3 glass-panel rounded-xl cursor-pointer hover:bg-slate-700/50 transition-colors" onclick="if(window.CompatibilityModule)CompatibilityModule.renderCompatScreen();else alert('模組載入中...')">
+                        <div class="app-icon w-10 h-10 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                        </div>
+                        <div class="app-info overflow-hidden">
+                            <div class="app-title text-sm font-bold text-white truncate">配對分析</div>
+                            <div class="app-desc text-[10px] text-slate-400 truncate">與朋友比較性格契合度</div>
+                        </div>
+                    </div>
+                    <div class="app-card flex items-center gap-3 p-3 glass-panel rounded-xl cursor-pointer hover:bg-slate-700/50 transition-colors" onclick="if(window.GroupDynamicsModule)GroupDynamicsModule.renderGroupScreen();else alert('模組載入中...')">
+                        <div class="app-icon w-10 h-10 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        </div>
+                        <div class="app-info overflow-hidden">
+                            <div class="app-title text-sm font-bold text-white truncate">團隊雷達</div>
+                            <div class="app-desc text-[10px] text-slate-400 truncate">分析小組的化學反應</div>
+                        </div>
+                    </div>
+                    <div class="app-card flex items-center gap-3 p-3 glass-panel rounded-xl cursor-pointer hover:bg-slate-700/50 transition-colors" onclick="if(window.DuoQuizModule)DuoQuizModule.renderDuoEntry();else alert('模組載入中...')">
+                        <div class="app-icon w-10 h-10 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M17 8a3 3 0 11-6 0 3 3 0 016 0zM7 8a3 3 0 110-6 3 3 0 010 6z"></path></svg>
+                        </div>
+                        <div class="app-info overflow-hidden">
+                            <div class="app-title text-sm font-bold text-white truncate">雙人派對</div>
+                            <div class="app-desc text-[10px] text-slate-400 truncate">兩人同時作答的趣味連線</div>
+                        </div>
+                    </div>
+                    <div class="app-card flex items-center gap-3 p-3 glass-panel rounded-xl cursor-pointer hover:bg-slate-700/50 transition-colors" onclick="if(window.PeerMirrorModule)PeerMirrorModule.renderPeerMirrorOwner();else alert('模組載入中...')">
+                        <div class="app-icon w-10 h-10 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        </div>
+                        <div class="app-info overflow-hidden">
+                            <div class="app-title text-sm font-bold text-white truncate">同儕互評</div>
+                            <div class="app-desc text-[10px] text-slate-400 truncate">邀請他人評價真實的你</div>
+                        </div>
+                    </div>
+                    <div class="app-card flex items-center gap-3 p-3 glass-panel rounded-xl cursor-pointer hover:bg-slate-700/50 transition-colors" onclick="if(window.LeaderboardModule)LeaderboardModule.renderLeaderboard();else alert('模組載入中...')">
+                        <div class="app-icon w-10 h-10 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        </div>
+                        <div class="app-info overflow-hidden">
+                            <div class="app-title text-sm font-bold text-white truncate">排行榜</div>
+                            <div class="app-desc text-[10px] text-slate-400 truncate">查看系統中最常見性格</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /app-center-container -->
+
+            <div id="admin-panel" class="hidden mt-8 p-5 border border-dashed border-cyan-500/50 rounded-2xl bg-slate-800/80 backdrop-blur-sm max-w-sm mx-auto text-left fade-in-up">
+                <div id="admin-lock" class="mb-4">
+                    <p class="text-xs text-slate-400 mb-2">請輸入管理員密碼：</p>
+                    <div class="flex gap-2">
+                        <input type="password" id="admin-password" placeholder="密碼" class="flex-1 bg-slate-900 border border-slate-600 rounded-lg p-2 text-white text-sm outline-none focus:border-cyan-400">
+                        <button onclick="adminUnlock()" class="bg-cyan-600/50 hover:bg-cyan-500/80 border border-cyan-400/50 text-white font-bold px-4 py-2 rounded-lg text-xs">解鎖</button>
+                    </div>
+                </div>
+                <div id="admin-content" class="hidden">
+                <h3 class="text-cyan-300 text-sm font-bold mb-3 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    管理員控制台
+                </h3>
+                
+                <div class="mb-4">
+                    <p class="text-xs text-slate-400 mb-2">手動快速生成測試圖卡：</p>
+                    <div class="grid grid-cols-2 gap-2 mb-2 text-sm">
+                        <select id="admin-mbti" class="col-span-2 bg-slate-900 border border-slate-600 rounded-lg p-2 text-white outline-none focus:border-cyan-400">
+                            <option value="INTJ">INTJ</option><option value="INTP">INTP</option>
+                            <option value="ENTJ">ENTJ</option><option value="ENTP">ENTP</option>
+                            <option value="INFJ">INFJ</option><option value="INFP">INFP</option>
+                            <option value="ENFJ">ENFJ</option><option value="ENFP">ENFP</option>
+                            <option value="ISTJ">ISTJ</option><option value="ISFJ">ISFJ</option>
+                            <option value="ESTJ">ESTJ</option><option value="ESFJ">ESFJ</option>
+                            <option value="ISTP">ISTP</option><option value="ISFP">ISFP</option>
+                            <option value="ESTP">ESTP</option><option value="ESFP">ESFP</option>
+                        </select>
+                        <select id="admin-dim5" class="bg-slate-900 border border-slate-600 rounded-lg p-2 text-white outline-none focus:border-cyan-400">
+                            <option value="A">A 果斷</option><option value="O">O 審慎</option>
+                        </select>
+                        <select id="admin-dim6" class="bg-slate-900 border border-slate-600 rounded-lg p-2 text-white outline-none focus:border-cyan-400">
+                            <option value="H">H 溫暖</option><option value="C">C 理性</option>
+                        </select>
+                    </div>
+                    <button onclick="adminGenerateCard()" class="w-full bg-cyan-600/50 hover:bg-cyan-500/80 border border-cyan-400/50 text-white font-bold py-2 px-4 rounded-lg transition-all text-xs">生成圖卡</button>
+                </div>
+                
+                <div class="border-t border-slate-600/50 my-3"></div>
+
+                <div class="mb-4">
+                    <p class="text-xs text-slate-400 mb-2">📊 統計儀表板：</p>
+                    <button onclick="adminFetchStats()" id="btn-fetch-stats" class="w-full bg-emerald-600/50 hover:bg-emerald-500/80 border border-emerald-400/50 text-white font-bold py-2 px-4 rounded-lg transition-all text-xs mb-2">載入統計</button>
+                    <div id="admin-stats" class="hidden text-xs text-slate-300 space-y-2 bg-slate-900/50 p-3 rounded-lg border border-slate-700"></div>
+                    <div id="admin-charts" class="hidden space-y-3 mt-2">
+                        <div class="admin-chart-container"><canvas id="adminTypePieChart" height="180"></canvas></div>
+                        <div class="admin-chart-container"><canvas id="adminTrendChart" height="140"></canvas></div>
+                        <button onclick="adminExportCSV()" class="w-full bg-slate-700/80 hover:bg-slate-600 border border-slate-500/50 text-slate-200 font-bold py-2 px-4 rounded-lg transition-all text-xs flex items-center justify-center gap-2"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>匯出為 CSV</button>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-600/50 my-3"></div>
+
+                <div class="mb-4">
+                    <p class="text-xs text-slate-400 mb-2">使用者紀錄：</p>
+                    <button onclick="adminFetchUsers()" id="btn-fetch-users" class="w-full bg-indigo-600/50 hover:bg-indigo-500/80 border border-indigo-400/50 text-white font-bold py-2 px-4 rounded-lg transition-all text-xs mb-2">載入紀錄</button>
+                    <div id="admin-users-list" class="max-h-40 overflow-y-auto custom-scrollbar space-y-1 mt-2"></div>
+                </div>
+
+                <div class="border-t border-slate-600/50 my-3"></div>
+
+                <div class="mb-4">
+                    <p class="text-xs text-slate-400 mb-2">🔬 進階分析工具：</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="if(window.AdminEnhanced)AdminEnhanced.renderEnhancedDashboard(adminStatsCache,adminSessionToken);else alert('模組載入中')" class="bg-violet-600/50 hover:bg-violet-500/80 border border-violet-400/50 text-white font-bold py-2 px-3 rounded-lg transition-all text-xs">64 型熱力圖</button>
+                        <button onclick="if(window.AdminEnhanced)AdminEnhanced.renderItemAnalysis(adminSessionToken);else alert('模組載入中')" class="bg-teal-600/50 hover:bg-teal-500/80 border border-teal-400/50 text-white font-bold py-2 px-3 rounded-lg transition-all text-xs">題目鑑別度</button>
+                        <button onclick="if(window.AdminEnhanced)AdminEnhanced.renderFeedbackPanel(adminSessionToken);else alert('模組載入中')" class="bg-amber-600/50 hover:bg-amber-500/80 border border-amber-400/50 text-white font-bold py-2 px-3 rounded-lg transition-all text-xs">用戶反饋</button>
+                        <button onclick="if(window.AdminEnhanced)AdminEnhanced.renderAdvancedExport(adminSessionToken);else alert('模組載入中')" class="bg-blue-600/50 hover:bg-blue-500/80 border border-blue-400/50 text-white font-bold py-2 px-3 rounded-lg transition-all text-xs">進階匯出</button>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-600/50 my-3"></div>
+
+                <div>
+                    <p class="text-xs text-red-400 mb-2">⚠️ 強制重新同步所有資料至試算表（覆蓋現有）：</p>
+                    <button onclick="adminForceSync()" id="btn-force-sync" class="w-full bg-red-900/50 hover:bg-red-800/80 border border-red-500/50 text-red-200 font-bold py-2 px-4 rounded-lg transition-all text-xs">🔄 強制同步</button>
+                </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="screen-quiz" class="hidden flex-col h-full overflow-hidden">
+            <div class="glass-card z-10">
+                <div class="h-1.5 bg-slate-800 w-full">
+                    <div id="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" class="h-full bg-gradient-to-r from-cyan-400 to-indigo-500 transition-all duration-500 ease-out w-0 shadow-[0_0_10px_rgba(56,189,248,0.5)]"></div>
+                </div>
+                <div class="px-6 pt-5 pb-4 border-b border-white/5">
+                    <div class="flex justify-between items-center mb-2">
+                        <div class="text-xs text-cyan-400 font-bold tracking-widest uppercase flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                            <span id="question-counter">Question 1 / 60</span>
+                        </div>
+                        <button id="btn-back" onclick="goBack()" aria-label="返回上一題" class="hidden text-xs text-slate-400 hover:text-cyan-300 transition-colors flex items-center gap-1 bg-white/5 px-2 py-1 rounded">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                            返回
+                        </button>
+                    </div>
+                    <!-- 維度完成度指示器 (#2) -->
+                    <div id="dim-indicators" class="flex gap-1.5 mt-2 mb-3">
+                        <span class="dim-dot" data-dim="E_I" title="E/I 外向-內向"><span class="text-[9px] text-slate-500">E/I</span></span>
+                        <span class="dim-dot" data-dim="S_N" title="S/N 實感-直覺"><span class="text-[9px] text-slate-500">S/N</span></span>
+                        <span class="dim-dot" data-dim="T_F" title="T/F 思考-情感"><span class="text-[9px] text-slate-500">T/F</span></span>
+                        <span class="dim-dot" data-dim="J_P" title="J/P 判斷-感知"><span class="text-[9px] text-slate-500">J/P</span></span>
+                        <span class="dim-dot" data-dim="A_O" title="A/O 果斷-審慎"><span class="text-[9px] text-slate-500">A/O</span></span>
+                        <span class="dim-dot" data-dim="H_C" title="H/C 溫暖-理性"><span class="text-[9px] text-slate-500">H/C</span></span>
+                        <span id="question-difficulty" class="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">基礎維度</span>
+                        <span class="ml-auto text-[10px] text-slate-500" id="est-time"></span>
+                    </div>
+                    <h3 class="text-xl md:text-2xl font-semibold text-slate-100 leading-snug" id="question-text" aria-live="polite">題目載入中...</h3>
+                </div>
+            </div>
+            
+            <div class="p-6 overflow-y-auto flex-1 custom-scrollbar">
+                <div id="options-container" role="radiogroup" aria-label="選項" class="space-y-3 flex-1 flex flex-col justify-start pb-6"></div>
+            </div>
+        </div>
+
+        <div id="screen-loading" class="hidden flex-col h-full flex-1 justify-center items-center p-8 text-center fade-in-up">
+            <div class="relative w-20 h-20 mb-8">
+                <div class="absolute inset-0 border-t-4 border-cyan-400 border-b-4 border-indigo-500 rounded-full animate-spin"></div>
+                <div class="absolute inset-2 border-l-4 border-fuchsia-400 border-r-4 border-amber-400 rounded-full animate-[spin_1.5s_linear_infinite_reverse]"></div>
+                <div class="absolute inset-0 flex items-center justify-center text-xs font-bold text-slate-300 animate-pulse">MBTI</div>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-100 mb-3">正在分析您的人格特質</h2>
+            <p id="loading-subtext" class="text-cyan-300 text-sm font-light tracking-wide pulse-text">正在將結果安全儲存至雲端...</p>
+        </div>
+
+        <div id="screen-result" class="hidden flex-col h-full overflow-y-auto custom-scrollbar">
+            <div id="capture-area" class="p-6 md:p-10 flex flex-col items-center justify-start text-left relative pb-20 w-full">
+                <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-64 bg-indigo-500/20 blur-[100px] pointer-events-none"></div>
+
+                <div class="w-full text-center text-xs font-bold tracking-widest text-cyan-400 mb-2 uppercase relative z-10">Your Personality Profile</div>
+                <div class="flex items-center justify-center gap-3 mb-2 relative z-10 w-full">
+    <img id="result-avatar" src="" class="w-12 h-12 rounded-full border-2 border-cyan-500 shadow-[0_0_10px_rgba(34,211,238,0.5)] hidden" />
+    <div id="result-user-name" class="text-xl text-slate-300 font-medium tracking-wide"></div>
+</div>
+                
+                <div id="result-code" class="w-full text-center text-6xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 tracking-tight mb-5 pb-2 relative z-10 drop-shadow-lg leading-normal"></div>
+                
+                <div class="w-full text-center relative z-10 mb-6">
+                    <div id="result-title" class="inline-block text-lg md:text-xl font-bold text-slate-900 bg-gradient-to-r from-cyan-400 to-blue-400 px-8 py-2.5 rounded-full shadow-[0_0_15px_rgba(56,189,248,0.4)] tracking-wide">稱號載入中...</div>
+                </div>
+
+                <div id="balanced-notice" class="hidden w-full bg-orange-900/30 border border-orange-500/50 text-orange-200 text-sm p-4 rounded-xl mb-8 relative z-10 text-left font-light leading-relaxed">
+                    <span class="font-bold flex items-center gap-2 mb-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        均衡特質提醒
+                    </span>
+                    我們發現您在某些維度上的偏好相當接近。在 MBTI 理論中，這代表您具備<strong class="text-orange-300">極佳的情境適應力與雙面靈活性</strong>，能在不同情境中自由切換思維模式。
+                </div>
+
+                <div class="w-full mb-8 relative z-10 text-left">
+                    <h4 class="text-xs font-bold text-slate-400 mb-4 border-b border-white/10 pb-2 uppercase tracking-widest">Preference Clarity Scales</h4>
+                    <div id="result-scales" class="space-y-4"></div>
+                </div>
+
+                <div class="w-full mb-8 relative z-10">
+                    <h4 class="text-xs font-bold text-slate-400 mb-3 border-b border-white/10 pb-2 uppercase tracking-widest text-left">Trait Radar Analysis</h4>
+                    <div class="glass-panel p-4 rounded-2xl radar-glow">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="w-full mb-8 text-left relative z-10">
+                    <h4 class="text-xs font-bold text-slate-400 mb-3 border-b border-white/10 pb-2 uppercase tracking-widest flex justify-between items-end">
+                        Cognitive Functions Development
+                        <span class="text-[10px] text-slate-500 font-normal">榮格認知功能</span>
+                    </h4>
+                    <div class="glass-panel p-4 rounded-2xl mb-3">
+                        <canvas id="functionsChart" height="160"></canvas>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2 text-xs text-center" id="jungian-functions"></div>
+                </div>
+
+                <div class="w-full glass-card rounded-2xl p-6 mb-8 text-left relative overflow-hidden z-10">
+                    <div class="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-cyan-400 to-indigo-500"></div>
+                    <h4 class="text-sm font-bold text-slate-300 mb-5 flex items-center gap-2 uppercase tracking-wide border-b border-white/10 pb-3">
+                        <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                        人格深度對比解析
+                    </h4>
+                    <div class="space-y-5">
+                        <div>
+                            <span class="inline-block px-2 py-1 bg-slate-800 border border-slate-600 rounded text-xs font-bold text-slate-400 mb-2">基礎 16 型</span>
+                            <p id="compare-16-text" class="text-sm text-slate-300 font-light leading-relaxed"></p>
+                        </div>
+                        <div class="flex justify-center text-cyan-500/50 -my-2">
+                            <svg class="w-5 h-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                        </div>
+                        <div class="bg-indigo-900/20 p-4 rounded-xl border border-cyan-500/20">
+                            <span class="inline-block px-2 py-1 bg-cyan-900/50 border border-cyan-500/50 rounded text-xs font-bold text-cyan-300 mb-2">專屬 64 型</span>
+                            <p id="compare-64-text" class="text-sm text-cyan-100 font-light leading-relaxed"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full relative z-10 space-y-3 mb-8">
+                    <div id="section-64-deep" class="accordion-section">
+                        <button onclick="toggleAccordion(this)" class="accordion-trigger w-full text-left flex justify-between items-center p-4 glass-panel rounded-xl hover:bg-white/5 transition-colors" aria-expanded="false">
+                            <h3 class="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400 flex items-center gap-2">
+                                <span class="text-xl">🧬</span> 64 型專屬深度解析
+                            </h3>
+                            <svg class="accordion-chevron w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="accordion-body hidden mt-2 space-y-5">
+                            <p class="text-xs text-slate-400 mb-4 px-1">以下內容基於您的第五維度（決策模式）與第六維度（待人態度）交叉生成，是傳統 16 型無法呈現的個人化面向。</p>
+
+                            <div id="ext-type-specific" class="glass-panel p-5 rounded-xl border-l-4 border-amber-400/60 bg-amber-950/20">
+                                <h4 class="font-bold text-amber-300 mb-2 flex items-center gap-2">🎯 你的專屬 64 型定位</h4>
+                                <p id="res-type-specific" class="text-sm text-amber-100 font-light leading-relaxed"></p>
+                            </div>
+
+                            <div id="ai-synthesis-block" class="glass-panel p-5 rounded-xl border border-indigo-500/40 relative overflow-hidden">
+                                <div class="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 opacity-50 pointer-events-none"></div>
+                                <h4 class="font-bold text-indigo-300 mb-2 flex items-center gap-2 relative z-10">
+                                    <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                    AI 專屬神諭
+                                </h4>
+                                <div id="ai-synthesis-content" class="text-sm text-slate-300 font-light leading-relaxed relative z-10 mt-2">
+                                </div>
+                            </div>
+
+                            <div id="ext-cross-type" class="glass-panel p-5 rounded-xl border-l-4 border-cyan-400/60 bg-cyan-950/20">
+                                <h4 class="font-bold text-cyan-300 mb-2 flex items-center gap-2">🔗 交叉類型動態：當你的底層認知遇上擴展維度</h4>
+                                <p id="res-cross-type" class="text-sm text-cyan-100 font-light leading-relaxed"></p>
+                            </div>
+
+                            <div class="glass-panel p-5 rounded-xl"><h4 class="font-bold text-slate-200 mb-2 flex items-center gap-2">🗣️ 你的社交風格</h4><p id="res-ext-social" class="text-sm text-slate-300 font-light leading-relaxed"></p></div>
+                            <div class="glass-panel p-5 rounded-xl"><h4 class="font-bold text-slate-200 mb-2 flex items-center gap-2">⚔️ 你的衝突處理模式</h4><p id="res-ext-conflict" class="text-sm text-slate-300 font-light leading-relaxed"></p></div>
+                            <div class="glass-panel p-5 rounded-xl"><h4 class="font-bold text-slate-200 mb-2 flex items-center gap-2">🧠 你的決策內心戲</h4><p id="res-ext-decision" class="text-sm text-slate-300 font-light leading-relaxed"></p></div>
+                            <div class="glass-panel p-5 rounded-xl"><h4 class="font-bold text-slate-200 mb-2 flex items-center gap-2">💕 你在親密關係中的樣子</h4><p id="res-ext-relationship" class="text-sm text-slate-300 font-light leading-relaxed"></p></div>
+                            <div class="glass-panel p-5 rounded-xl border-l-4 border-amber-400/50"><h4 class="font-bold text-amber-300 mb-2 flex items-center gap-2">⚡ 你的獨家超能力</h4><p id="res-ext-superpower" class="text-sm text-amber-100 font-light leading-relaxed"></p></div>
+                            <div class="glass-panel p-5 rounded-xl border-l-4 border-rose-400/50"><h4 class="font-bold text-rose-300 mb-2 flex items-center gap-2">🕳️ 你的專屬盲點</h4><p id="res-ext-blindspot" class="text-sm text-rose-100 font-light leading-relaxed"></p></div>
+                            <div class="glow-stress p-5 rounded-xl border border-red-500/30 bg-red-500/10"><h4 class="font-bold text-red-300 mb-2 flex items-center gap-2">🌀 壓力下的你（64型版）</h4><p id="res-ext-stress" class="text-sm text-red-100 font-light leading-relaxed"></p></div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                <div class="glass-panel p-4 rounded-xl border-t border-t-emerald-500/30"><h4 class="font-bold text-emerald-400 mb-2 text-sm">+ 64 型額外優勢</h4><ul class="list-disc pl-4 text-slate-300 space-y-1 font-light text-sm" id="res-ext-strengths"></ul></div>
+                                <div class="glass-panel p-4 rounded-xl border-t border-t-rose-500/30"><h4 class="font-bold text-rose-400 mb-2 text-sm">- 64 型額外盲點</h4><ul class="list-disc pl-4 text-slate-300 space-y-1 font-light text-sm" id="res-ext-weaknesses"></ul></div>
+                            </div>
+                            <div class="glass-panel p-5 rounded-xl border-l-4 border-emerald-400/60"><h4 class="font-bold text-emerald-300 mb-2 flex items-center gap-2">🔑 64 型成長關鍵</h4><p id="res-ext-growth" class="text-sm text-emerald-100 font-light leading-relaxed"></p></div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-section">
+                        <button onclick="toggleAccordion(this)" class="accordion-trigger w-full text-left flex justify-between items-center p-4 glass-panel rounded-xl hover:bg-white/5 transition-colors" aria-expanded="false">
+                            <h3 class="text-lg font-bold text-cyan-300 flex items-center gap-2">📖 人格總評 (Portrait)</h3>
+                            <svg class="accordion-chevron w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="accordion-body hidden mt-2">
+                            <div class="glass-panel p-6 rounded-2xl border-l-4 border-cyan-400 shadow-[0_4px_15px_rgba(34,211,238,0.1)]">
+                                <p id="res-portrait" class="text-sm text-slate-300 font-light leading-relaxed"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-section">
+                        <button onclick="toggleAccordion(this)" class="accordion-trigger w-full text-left flex justify-between items-center p-4 glass-panel rounded-xl hover:bg-white/5 transition-colors" aria-expanded="false">
+                            <h3 class="text-lg font-bold text-cyan-300 flex items-center gap-2">🎭 多面向性格剖析</h3>
+                            <svg class="accordion-chevron w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="accordion-body hidden mt-2 space-y-6">
+                            <div class="glass-panel p-5 rounded-xl"><h4 class="text-base font-bold text-cyan-300 mb-2 flex items-center gap-2">🎭 外在印象與真實自我</h4><p id="res-persona" class="text-sm text-slate-300 font-light leading-relaxed"></p></div>
+                            <div class="glass-panel p-5 rounded-xl"><h4 class="text-base font-bold text-cyan-300 mb-2 flex items-center gap-2">🏆 對你而言，什麼是成功？</h4><p id="res-success" class="text-sm text-slate-300 font-light leading-relaxed"></p></div>
+                            <div class="glass-panel p-5 rounded-xl"><h4 class="text-base font-bold text-cyan-300 mb-2 flex items-center gap-2">❤️ 關係與情感</h4><p id="res-relationships" class="text-sm text-slate-300 font-light leading-relaxed"></p></div>
+                            <div class="glow-awakened p-5 rounded-xl border border-yellow-500/30 bg-yellow-500/10"><h4 class="text-base font-bold text-yellow-300 mb-2 flex items-center gap-2">✨ 高階覺醒狀態</h4><p id="res-awakened" class="text-sm text-yellow-100 font-light leading-relaxed"></p></div>
+                            <div class="glow-stress p-5 rounded-xl border border-red-500/30 bg-red-500/10"><h4 class="text-base font-bold text-red-300 mb-2 flex items-center gap-2">⚠️ 壓力崩潰邊緣</h4><p id="res-stress" class="text-sm text-red-100 font-light leading-relaxed"></p></div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-section">
+                        <button onclick="toggleAccordion(this)" class="accordion-trigger w-full text-left flex justify-between items-center p-4 glass-panel rounded-xl hover:bg-white/5 transition-colors" aria-expanded="false">
+                            <h3 class="text-lg font-bold text-emerald-300 flex items-center gap-2">💎 核心天賦與盲點</h3>
+                            <svg class="accordion-chevron w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="accordion-body hidden mt-2">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                <div class="glass-panel p-5 rounded-xl border-t border-t-emerald-500/30"><h4 class="font-bold text-emerald-400 mb-3 flex items-center gap-2"><span class="text-lg">+</span> 核心天賦</h4><ul class="list-disc pl-4 text-slate-300 space-y-1.5 font-light" id="res-strengths"></ul></div>
+                                <div class="glass-panel p-5 rounded-xl border-t border-t-rose-500/30"><h4 class="font-bold text-rose-400 mb-3 flex items-center gap-2"><span class="text-lg">-</span> 潛在盲點</h4><ul class="list-disc pl-4 text-slate-300 space-y-1.5 font-light" id="res-weaknesses"></ul></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-section">
+                        <button onclick="toggleAccordion(this)" class="accordion-trigger w-full text-left flex justify-between items-center p-4 glass-panel rounded-xl hover:bg-white/5 transition-colors" aria-expanded="false">
+                            <h3 class="text-lg font-bold text-indigo-300 flex items-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                                深度潛能與盲點分析（榮格心理學）
+                            </h3>
+                            <svg class="accordion-chevron w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="accordion-body hidden mt-2 space-y-4">
+                            <div class="glass-panel p-5 rounded-xl border-t border-t-yellow-400/50"><h4 class="font-bold text-yellow-300 mb-3 flex items-center gap-2">🌟 閃耀天賦 (Flourishing Gifts)</h4><ul class="list-disc pl-5 text-slate-300 space-y-1.5 font-light" id="res-flourishing"></ul></div>
+                            <div class="glass-panel p-5 rounded-xl border-t border-t-purple-500/50"><h4 class="font-bold text-purple-400 mb-3 flex items-center gap-2">🌑 潛在問題與陰暗面 (Problem Areas)</h4><ul class="list-disc pl-5 text-slate-300 space-y-1.5 font-light" id="res-problem-issues"></ul></div>
+                            <div class="glass-panel p-5 rounded-xl border border-slate-600/50 bg-slate-800/50"><h4 class="font-bold text-slate-300 mb-3 flex items-center gap-2">🧠 心理學成因剖析 (Explanation)</h4><p id="res-problem-explanation" class="text-sm text-slate-300 font-light leading-relaxed"></p></div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-section">
+                        <button onclick="toggleAccordion(this)" class="accordion-trigger w-full text-left flex justify-between items-center p-4 glass-panel rounded-xl hover:bg-white/5 transition-colors" aria-expanded="false">
+                            <h3 class="text-lg font-bold text-cyan-300 flex items-center gap-2">💼 天賦舞台與職涯地雷</h3>
+                            <svg class="accordion-chevron w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="accordion-body hidden mt-2">
+                            <div class="glass-panel p-5 rounded-xl"><p id="res-career-drive" class="text-sm text-slate-300 font-light leading-relaxed"></p></div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-section">
+                        <button onclick="toggleAccordion(this)" class="accordion-trigger w-full text-left flex justify-between items-center p-4 glass-panel rounded-xl hover:bg-white/5 transition-colors border-l-4 border-emerald-400/60" aria-expanded="false">
+                            <h3 class="text-lg font-bold text-emerald-300 flex items-center gap-2">🌱 成長核心課題</h3>
+                            <svg class="accordion-chevron w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="accordion-body hidden mt-2">
+                            <div class="glass-panel p-5 rounded-xl"><p id="res-growth-focus" class="text-sm text-slate-300 font-light leading-relaxed"></p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full text-left bg-gradient-to-br from-slate-800 to-indigo-900/50 border border-indigo-500/30 rounded-2xl p-6 relative z-10 shadow-inner mb-6">
+                    <h4 class="font-bold mb-4 flex items-center gap-2 text-cyan-300 tracking-wide">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        專屬成長法則 (10 Rules to Live By)
+                    </h4>
+                    <ul class="space-y-3 text-sm text-indigo-100 font-light leading-relaxed" id="res-rules"></ul>
+                </div>
+
+                <div id="celeb-match-section" class="w-full relative z-10 mb-2">
+                    <h4 class="text-xs font-bold text-slate-400 mb-3 border-b border-white/10 pb-2 uppercase tracking-widest text-left flex items-center gap-2">
+                        <span>⭐</span> You Might Be Like...
+                    </h4>
+                    <div id="celeb-match-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+                </div>
+            </div>
+            
+            <div class="p-4 md:p-6 sticky bottom-0 bg-slate-900/90 backdrop-blur-md border-t border-white/5 z-20 flex flex-wrap gap-2 md:gap-3" style="padding-bottom: max(1rem, env(safe-area-inset-bottom));">
+                
+                <button id="export-video-btn" onclick="if(window.VideoExportModule)window.VideoExportModule.startExport();else alert('模組載入中...')" class="hidden bg-indigo-600 text-white font-bold py-3 px-3 md:px-6 rounded-xl hover:bg-indigo-500 transition duration-300 flex-1 justify-center items-center gap-2 shadow-lg text-xs md:text-base">
+                    <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                    <span>動態影片</span>
+                </button>
+                <button id="download-btn" onclick="downloadResult()" class="hidden bg-white text-slate-900 font-bold py-3 px-3 md:px-6 rounded-xl hover:bg-slate-200 transition duration-300 flex-1 justify-center items-center gap-2 shadow-lg text-xs md:text-base">
+                    <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    <span>完整圖卡</span>
+                </button>
+                <button id="social-card-btn" onclick="if(window.ShareEnhanced)ShareEnhanced.renderShareModal();else shareResult();" class="hidden bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-3 px-3 md:px-5 rounded-xl hover:from-purple-400 hover:to-pink-400 transition duration-300 flex-1 justify-center items-center gap-2 shadow-lg text-xs md:text-base">
+                    <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+                    <span>分享</span>
+                </button>
+                <button id="invite-partner-btn" onclick="invitePartner()" class="hidden bg-pink-500/20 text-pink-300 border border-pink-500/50 font-bold py-3 px-3 md:px-5 rounded-xl hover:bg-pink-500/40 transition duration-300 flex-1 justify-center items-center gap-2 shadow-lg text-xs md:text-base">
+                    <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                    <span>羈絆連結</span>
+                </button>
+                <button id="share-btn" onclick="shareResult()" class="hidden bg-cyan-500 text-white font-bold py-3 px-3 md:px-5 rounded-xl hover:bg-cyan-400 transition duration-300 flex-1 justify-center items-center gap-2 shadow-lg text-xs md:text-base">
+                    <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    <span>PDF 報告</span>
+                </button>
+                <button onclick="resetQuiz()" class="bg-slate-800 text-slate-200 border border-slate-600 font-bold py-3 px-3 md:px-4 rounded-xl hover:bg-slate-700 transition duration-300 flex-none text-xs md:text-sm whitespace-nowrap">
+                    回首頁
+                </button>
+                <button onclick="resetQuiz(); setTimeout(startQuiz, 100);" class="bg-indigo-800/60 text-indigo-200 border border-indigo-500/30 font-bold py-3 px-3 md:px-4 rounded-xl hover:bg-indigo-700/60 transition duration-300 flex-none text-xs md:text-sm whitespace-nowrap" title="使用不同的隨機題目重新測驗">
+                    🔄 換題重測
+                </button>
+            </div>
+        </div>
+
+        <div id="modal-history" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm fade-in-up">
+            <div class="glass-card w-full max-w-md rounded-2xl p-6 relative max-h-[80vh] flex flex-col border border-cyan-500/30">
+                <button onclick="closeHistory()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors" aria-label="關閉">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+                <h3 class="text-xl font-bold text-cyan-400 mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    您的測驗紀錄
+                </h3>
+                <p class="text-xs text-slate-400 mb-4 pb-2 border-b border-slate-700">紀錄僅保存在此裝置的瀏覽器中。</p>
+                <div id="history-list" class="overflow-y-auto custom-scrollbar flex-1 space-y-3 pb-2"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 新功能模態容器 -->
+    <div id="modal-feature" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
+        <div class="glass-card w-full max-w-2xl rounded-2xl relative max-h-[90vh] flex flex-col border border-cyan-500/30 overflow-hidden">
+            <button onclick="closeFeatureModal()" class="absolute top-4 right-4 z-10 text-slate-400 hover:text-white transition-colors bg-slate-800/80 rounded-full p-1.5" aria-label="關閉">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <div id="feature-content" class="overflow-y-auto custom-scrollbar flex-1 p-6"></div>
+        </div>
+    </div>
+
+    <!-- Toast 容器 -->
+    <div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-[9999] flex flex-col gap-2 items-center pointer-events-none"></div>
+    <!-- #10 a11y: 螢幕閱讀器即時公告區域 -->
+    <div id="sr-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- 核心 -->
+    <?!= include('utils') ?>
+    <?!= include('questions') ?>
+    <?!= include('database') ?>
+    <?!= include('celebText') ?>
+
+    <!-- 三大功能 bundle (取代原 13 個獨立模組檔) -->
+    <?!= include('growth-bundle') ?>     <!-- timeline + journal + daily-insight + evolution-map -->
+    <?!= include('social-bundle') ?>     <!-- compatibility + group-dynamics + team + leaderboard + share-enhanced -->
+    <?!= include('explore-bundle') ?>    <!-- gallery + explorer + simulator + quickquiz -->
+
+    <!-- 保留獨立的大型/特殊模組 -->
+    <?!= include('feedback') ?>
+    <?!= include('ai-coach') ?>
+    <?!= include('admin-enhanced') ?>
+
+    <!-- ═══ 應用程式模組 (App Modules 合併檔) ═══ -->
+    <?!= include('app-modules') ?>
+
+    <script>
+    // ==========================================
+    // #12 EventBus：模組間解耦通訊
+    // ==========================================
+    window.EventBus = (function() {
+        const listeners = {};
+        return {
+            on(event, fn) {
+                if (!listeners[event]) listeners[event] = [];
+                listeners[event].push(fn);
+                return () => { listeners[event] = listeners[event].filter(f => f !== fn); };
+            },
+            emit(event, data) {
+                (listeners[event] || []).forEach(fn => { try { fn(data); } catch(e) { console.error('[EventBus]', event, e); } });
+            },
+            off(event, fn) {
+                if (listeners[event]) listeners[event] = listeners[event].filter(f => f !== fn);
+            }
+        };
+    })();
+
+    // ==========================================
+    // #9 i18n 基礎建設：語言字典 + 切換機制
+    // ==========================================
+    window.I18n = (function() {
+        const dictionaries = {
+            'zh-TW': {
+                'start.title': 'MBTI-64',
+                'start.subtitle': '擴展人格測驗',
+                'start.begin': '開始探索',
+                'start.resume': '接續未完成的測驗',
+                'start.quick': '⚡ 快速版 (18 題 · 約 3 分鐘)',
+                'quiz.back': '上一題',
+                'quiz.progress': '題',
+                'result.download': '完整圖卡',
+                'result.share': '分享',
+                'result.retry': '重新測驗',
+                'admin.unlock': '解鎖',
+                'admin.loading': '載入中...',
+                'toast.saved': '已儲存',
+                'toast.error': '發生錯誤'
+            },
+            'en': {
+                'start.title': 'MBTI-64',
+                'start.subtitle': 'Expanded Personality Assessment',
+                'start.begin': 'Start Exploring',
+                'start.resume': 'Resume Unfinished Test',
+                'start.quick': '⚡ Quick Version (18 Q · ~3 min)',
+                'quiz.back': 'Previous',
+                'quiz.progress': 'Q',
+                'result.download': 'Full Card',
+                'result.share': 'Share',
+                'result.retry': 'Retake',
+                'admin.unlock': 'Unlock',
+                'admin.loading': 'Loading...',
+                'toast.saved': 'Saved',
+                'toast.error': 'Error occurred'
+            }
+        };
+        let currentLang = 'zh-TW';
+        return {
+            t(key) { return (dictionaries[currentLang] || {})[key] || (dictionaries['zh-TW'] || {})[key] || key; },
+            setLang(lang) { if (dictionaries[lang]) { currentLang = lang; EventBus.emit('lang-changed', lang); } },
+            getLang() { return currentLang; },
+            getAvailable() { return Object.keys(dictionaries); }
+        };
+    })();
+
+    // ==========================================
+    // #1 Lazy Loading：結果資料非同步載入
+    // ==========================================
+    window._resultDataPromise = null;
+    window.ensureResultData = function() {
+        if (window.sysData && window.sysData.mbtiBase && Object.keys(window.sysData.mbtiBase).length > 0) {
+            return Promise.resolve(window.sysData);
+        }
+        if (window._resultDataPromise) return window._resultDataPromise;
+        window._resultDataPromise = new Promise(function(resolve, reject) {
+            if (typeof google !== 'undefined') {
+                google.script.run
+                    .withSuccessHandler(function(data) {
+                        if (data) {
+                            // 合併到 sysData
+                            if (!window.sysData) window.sysData = {};
+                            if (data.database) { window.sysData.mbtiBase = data.database; window.mbtiBase = data.database; }
+                            if (data.modifiers) { window.sysData.suffixModifiers = data.modifiers; window.suffixModifiers = data.modifiers; }
+                            if (data.celebs) {
+                                window.sysData.celebs = data.celebs;
+                                if (data.celebs.base) window.celebDatabase = data.celebs.base;
+                                if (data.celebs.suffix) window.suffixCelebData = data.celebs.suffix;
+                                if (data.celebs.combo) window.combo64CelebNote = data.celebs.combo;
+                            }
+                        }
+                        resolve(window.sysData);
+                    })
+                    .withFailureHandler(function(err) {
+                        console.error('fetchResultData failed:', err);
+                        reject(err);
+                    })
+                    .fetchResultData();
+            } else {
+                // 本機模式：資料已由 sysData 提供
+                resolve(window.sysData || {});
+            }
+        });
+        return window._resultDataPromise;
+    };
+
+    // ==========================================
+    // #2b 答題中途退出保護升級
+    // ==========================================
+    window._originalResetQuiz = window.resetQuiz;
+    // Will be patched after IIFE runs
+
+    // ==========================================
+    // #10 a11y: 螢幕閱讀器公告函式
+    // ==========================================
+    window.announceToSR = function(message) {
+        const el = document.getElementById('sr-announcer');
+        if (el) { el.textContent = ''; setTimeout(() => { el.textContent = message; }, 50); }
+    };
+    </script>
+
+    <script>
+    // ==========================================
+    // 全域功能：主題切換、模態視窗
+    // ==========================================
+    function toggleTheme() {
+        const body = document.body;
+        const current = body.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        body.setAttribute('data-theme', next);
+        try { localStorage.setItem('mbti64_theme', next); } catch(e) {}
+        document.getElementById('theme-icon-dark').classList.toggle('hidden', next === 'light');
+        document.getElementById('theme-icon-light').classList.toggle('hidden', next === 'dark');
+    }
+    // 初始化主題
+    (function() {
+        const saved = localStorage.getItem('mbti64_theme');
+        if (saved === 'light') {
+            document.body.setAttribute('data-theme', 'light');
+            const di = document.getElementById('theme-icon-dark');
+            const li = document.getElementById('theme-icon-light');
+            if (di) di.classList.add('hidden');
+            if (li) li.classList.remove('hidden');
+        }
+    })();
+
+    function openFeatureModal() { document.getElementById('modal-feature').classList.remove('hidden'); }
+    function closeFeatureModal() { document.getElementById('modal-feature').classList.add('hidden'); document.getElementById('feature-content').innerHTML = ''; }
+    </script>
+
+    <script>
+    // ==========================================
+    // 使用 IIFE 封裝，減少全域污染
+    // ==========================================
+    (function() {
+        'use strict';
+
+        // ==========================================
+        // 工具函式（保留向後相容，同時 utils.html 提供增強版）
+        // ==========================================
+
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;')
+                .replace(/`/g, '&#96;')
+                .replace(/\//g, '&#x2F;');
+        }
+
+        function fisherYatesShuffle(arr) {
+            const a = arr.slice();
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        function createFreshScores() {
+            return { E:0, I:0, S:0, N:0, T:0, F:0, J:0, P:0, A:0, O:0, H:0, C:0 };
+        }
+        
+        function createFreshState() {
+            return {
+                currentStep: 0,
+                scores: createFreshScores(),
+                times: createFreshScores(),
+                counts: createFreshScores(),
+                history: [],
+                isAnimating: false,
+                finalUserName: '匿名',
+                shuffledQuestions: []
+            };
+        }
+
+        function textToHtml(raw) {
+            if (!raw) return '<span class="text-slate-500">暫無資料</span>';
+            return raw.split('\n\n').map(p =>
+                `<p class="mb-3 last:mb-0 leading-relaxed">${escapeHtml(p).replace(/\n/g,'<br>')}</p>`
+            ).join('');
+        }
+
+        // ==========================================
+        // 核心架構
+        // ==========================================
+        const needsInit = <?= needsInit ?>;
+        // #4 修復：集中定義常數，避免三處重複定義 12 導致維護風險
+        const QUESTIONS_PER_DIM = 12;
+        // 引入 celebs 物件來存放名人資料
+        const sysData = { questions: [], mbtiBase: {}, suffixModifiers: {}, celebs: {base:{}, suffix:{}, combo:{}} };
+        const DOM = {};
+        let questionStartTime = 0;
+        let QuizState = createFreshState();
+        // [修復4] 將 QuizState 掛到 window，供 ExplorerModule / QuickQuizModule 等外部模組讀取
+        window.QuizState = QuizState;
+        let loadingInterval;
+        const QUIZ_VERSION = 'v6_120q';
+        const USER_SESSION_TOKEN = '<?= typeof quizSessionToken !== "undefined" ? quizSessionToken : "" ?>';
+
+        let adminSessionToken = null;
+
+        // 全域錯誤捕獲 (#28)
+        window.addEventListener('error', function(e) {
+            console.error('[MBTI-64 全域錯誤]', e.message, e.filename, e.lineno);
+        });
+        window.addEventListener('unhandledrejection', function(e) {
+            console.error('[MBTI-64 未處理 Promise]', e.reason);
+        });
+
+        let intentionalNavigation = false;
+        window.addEventListener('beforeunload', function (e) {
+            if (intentionalNavigation) return;
+            if (QuizState.currentStep > 0 && QuizState.currentStep < QuizState.shuffledQuestions.length) { e.preventDefault(); e.returnValue = ''; }
+        });
+
+        // ==========================================
+        // DOMContentLoaded
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            DOM.startBtn = document.getElementById('start-btn');
+            DOM.resumeBtn = document.getElementById('resume-btn');
+            DOM.screenStart = document.getElementById('screen-start');
+            DOM.screenQuiz = document.getElementById('screen-quiz');
+            DOM.screenLoading = document.getElementById('screen-loading');
+            DOM.screenResult = document.getElementById('screen-result');
+            DOM.questionCounter = document.getElementById('question-counter');
+            DOM.questionText = document.getElementById('question-text');
+            DOM.btnBack = document.getElementById('btn-back');
+            DOM.progressBar = document.getElementById('progress-bar');
+            DOM.optionsContainer = document.getElementById('options-container');
+
+            if (needsInit) {
+                console.log("【系統提示】偵測到試算表為空，正在全自動建置...");
+                DOM.startBtn.innerText = "資料庫建置中，請稍候...";
+                DOM.startBtn.disabled = true;
+                DOM.startBtn.classList.add('opacity-70', 'cursor-not-allowed');
+                
+                sysData.questions = typeof questions !== 'undefined' ? questions : [];
+                sysData.mbtiBase = typeof mbtiBase !== 'undefined' ? mbtiBase : {};
+                sysData.suffixModifiers = typeof suffixModifiers !== 'undefined' ? suffixModifiers : {};
+                
+                // 抓取剛從 celebText.html 載入的 window 變數
+                sysData.celebs = {
+                    base: typeof window.celebDatabase !== 'undefined' ? window.celebDatabase : {},
+                    suffix: typeof window.suffixCelebData !== 'undefined' ? window.suffixCelebData : {},
+                    combo: typeof window.combo64CelebNote !== 'undefined' ? window.combo64CelebNote : {}
+                };
+
+                if (typeof google !== 'undefined') {
+                    google.script.run.withSuccessHandler(() => {
+                        DOM.startBtn.innerText = "開始探索";
+                        DOM.startBtn.disabled = false;
+                        DOM.startBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+                    }).syncDataToSheets({
+                        questions: sysData.questions,
+                        mbtiBase: sysData.mbtiBase,
+                        suffixModifiers: sysData.suffixModifiers,
+                        celebDatabase: sysData.celebs.base,
+                        suffixCelebData: sysData.celebs.suffix,
+                        combo64CelebNote: sysData.celebs.combo
+                    });
+                }
+            } else {
+                // 從 GAS 後端抓取雲端快取的資料
+                sysData.questions = <?!= questionsData ?>;
+                sysData.mbtiBase = <?!= databaseData ?>;
+                sysData.suffixModifiers = <?!= modifiersData ?>;
+                sysData.celebs = <?!= celebsData ?>; // 接收名人與 64型定位資料
+            }
+
+            if (!sysData.questions || sysData.questions.length === 0) {
+                alert("資料庫載入失敗！請確認試算表格式或屬性設定。");
+                DOM.startBtn.disabled = true;
+                DOM.startBtn.innerText = "資料庫異常";
+                return;
+            }
+
+            // #29 使用 safeLocalGet 以支援分塊儲存
+            const savedState = (typeof safeLocalGet === 'function') ? safeLocalGet('mbti64_progress') : localStorage.getItem('mbti64_progress');
+            if (savedState) {
+                try {
+                    const parsed = JSON.parse(savedState);
+                    if (parsed._version === QUIZ_VERSION && parsed.currentStep > 0 && parsed.currentStep < parsed.shuffledQuestions.length) {
+                        DOM.resumeBtn.classList.remove('hidden');
+                    } else { localStorage.removeItem('mbti64_progress'); }
+                } catch (e) { localStorage.removeItem('mbti64_progress'); }
+            }
+        });
+
+        let lastKeyTime = 0;
+        document.addEventListener('keydown', function(e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            if (DOM.screenQuiz && DOM.screenQuiz.classList.contains('hidden')) return;
+            if (QuizState.isAnimating) return;
+            const now = Date.now();
+            if (now - lastKeyTime < 300) return;
+            lastKeyTime = now;
+            
+            const key = parseInt(e.key);
+            if (key >= 1 && key <= 4) {
+                const buttons = document.querySelectorAll('#options-container .option-btn');
+                if (buttons[key - 1]) buttons[key - 1].click();
+            } else if (e.key === 'Backspace' || e.key === 'ArrowLeft') {
+                goBack();
+            }
+        });
+
+        // ==========================================
+        // 手勢滑動 (Swipe Gestures)
+        // ==========================================
+        let touchStartX = 0;
+        let touchEndX = 0;
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+        document.addEventListener('touchend', e => {
+            if (!DOM.screenQuiz || DOM.screenQuiz.classList.contains('hidden') || QuizState.isAnimating) return;
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, { passive: true });
+        function handleSwipe() {
+            const SWIPE_THRESHOLD = 50;
+            // 向右滑動 (X增加) -> 返回上一題
+            if (touchEndX - touchStartX > SWIPE_THRESHOLD) {
+                if (typeof goBack === 'function') goBack();
+            }
+        }
+
+        // ==========================================
+        // 進度儲存
+        // ==========================================
+        // #29 localStorage 安全寫入，優先使用 MBTI64Utils.safeLocalSet 以支援自動分塊
+        function safeLocalSet(key, value) {
+            // 優先使用 MBTI64Utils 的分塊版本（若已載入）
+            if (typeof MBTI64Utils !== 'undefined' && typeof MBTI64Utils.safeLocalSet === 'function') {
+                try {
+                    return !!MBTI64Utils.safeLocalSet(key, value);
+                } catch (_) { /* fallback 到本地版本 */ }
+            }
+            // Fallback：原生 localStorage + 配額錯誤回退
+            try {
+                localStorage.setItem(key, value);
+                return true;
+            } catch (e) {
+                if (e.name === 'QuotaExceededError' || e.code === 22 || e.code === 1014) {
+                    // 容量爆滿 → 清除舊歷史再嘗試
+                    try {
+                        const hist = JSON.parse(safeLocalGet('mbti64_history') || '[]');
+                        if (hist.length > 3) {
+                            localStorage.setItem('mbti64_history', JSON.stringify(hist.slice(0, 3)));
+                            localStorage.setItem(key, value);
+                            return true;
+                        }
+                    } catch(_) {}
+                    console.warn('localStorage 容量不足，無法儲存：' + key);
+                }
+                return false;
+            }
+        }
+
+        // #29 配對讀取：優先使用 MBTI64Utils.safeLocalGet
+        function safeLocalGet(key) {
+            if (typeof MBTI64Utils !== 'undefined' && typeof MBTI64Utils.safeLocalGet === 'function') {
+                try { return MBTI64Utils.safeLocalGet(key); } catch (_) {}
+            }
+            try { return localStorage.getItem(key); } catch (_) { return null; }
+        }
+
+        function saveProgress() {
+            QuizState._version = QUIZ_VERSION;
+            safeLocalSet('mbti64_progress', JSON.stringify(QuizState));
+        }
+        function clearProgress() { localStorage.removeItem('mbti64_progress'); }
+
+        // ==========================================
+        // Accordion 折疊控制
+        // ==========================================
+        window.toggleAccordion = function(btn) {
+            const section = btn.closest('.accordion-section');
+            const body = section.querySelector('.accordion-body');
+            const chevron = btn.querySelector('.accordion-chevron');
+            const expanded = btn.getAttribute('aria-expanded') === 'true';
+            
+            btn.setAttribute('aria-expanded', !expanded);
+            chevron.style.transform = expanded ? '' : 'rotate(180deg)';
+            
+            if (expanded) {
+                // 收合動畫
+                body.style.maxHeight = body.scrollHeight + 'px';
+                body.style.opacity = '1';
+                body.offsetHeight; // force reflow
+                body.style.transition = 'max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                body.style.maxHeight = '0px';
+                body.style.opacity = '0';
+                setTimeout(() => {
+                    if (btn.getAttribute('aria-expanded') !== 'true') {
+                        body.classList.add('hidden');
+                        body.style = '';
+                    }
+                }, 300);
+            } else {
+                // 展開動畫
+                body.classList.remove('hidden');
+                body.style.maxHeight = '0px';
+                body.style.opacity = '0';
+                body.offsetHeight; // force reflow
+                body.style.transition = 'max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                body.style.maxHeight = body.scrollHeight + 100 + 'px';
+                body.style.opacity = '1';
+                setTimeout(() => {
+                    if (btn.getAttribute('aria-expanded') === 'true') {
+                        body.style.maxHeight = 'none';
+                    }
+                }, 300);
+            }
+        };
+
+        // ==========================================
+        // 測驗流程
+        // ==========================================
+        window.resumeQuiz = function() {
+            try {
+                const parsed = JSON.parse(safeLocalGet('mbti64_progress'));
+                if (parsed && parsed._version === QUIZ_VERSION && parsed.shuffledQuestions && parsed.shuffledQuestions.length > 0) {
+                    QuizState = parsed;
+                    window.QuizState = QuizState; // [修復4] 同步到 window
+                    if(!QuizState.times) QuizState.times = createFreshScores();
+                    if(!QuizState.counts) QuizState.counts = createFreshScores();
+                    DOM.screenStart.classList.add('hidden');
+                    DOM.screenQuiz.classList.remove('hidden');
+                    DOM.screenQuiz.classList.add('flex', 'fade-in-up');
+                    updateDimIndicators();  // #9 從已存進度重建計數器
+                    renderQuestion();
+                } else throw new Error("存檔無效");
+            } catch(e) { clearProgress(); startQuiz(); }
+        };
+
+        window.startQuiz = function() {
+            DOM.startBtn.disabled = true;
+            DOM.startBtn.innerText = "測驗生成中...";
+            DOM.startBtn.classList.add('opacity-70', 'cursor-not-allowed');
+            DOM.resumeBtn.classList.add('hidden');
+
+            const nameInput = document.getElementById('user-name-input').value.trim();
+            QuizState = createFreshState();
+            window.QuizState = QuizState; // [修復4] 同步到 window
+            QuizState.finalUserName = nameInput !== "" ? nameInput : "匿名";
+
+            const grouped = {};
+            sysData.questions.forEach(q => {
+                if(!grouped[q.dimension]) grouped[q.dimension] = [];
+                grouped[q.dimension].push(q);
+            });
+            // #4 修復：使用頂層統一常數 QUESTIONS_PER_DIM，不再重複定義
+            Object.keys(grouped).forEach(key => {
+                grouped[key] = fisherYatesShuffle(grouped[key]).slice(0, QUESTIONS_PER_DIM);
+            });
+            
+            const dimKeys = fisherYatesShuffle(Object.keys(grouped));
+
+            QuizState.shuffledQuestions = [];
+            let hasMore = true;
+            while(hasMore) {
+                hasMore = false;
+                dimKeys.forEach(key => {
+                    if(grouped[key].length > 0) { 
+                        const q = grouped[key].shift();
+                        q.options = fisherYatesShuffle(q.options);
+                        QuizState.shuffledQuestions.push(q); 
+                        hasMore = true; 
+                    }
+                });
+            }
+
+            saveProgress();
+            DOM.screenStart.classList.add('hidden');
+            DOM.screenQuiz.classList.remove('hidden');
+            DOM.screenQuiz.classList.add('flex', 'fade-in-up');
+            updateDimIndicators();  // #9 初始化維度指示器（全量，僅此一次）
+            renderQuestion();
+            // #1 / #12：通知 EventBus 測驗已啟動，觸發 lazy loading
+            if (typeof EventBus !== 'undefined') EventBus.emit('quiz-started', { totalQuestions: QuizState.shuffledQuestions.length });
+        };
+
+        // [修復2] 快速版橋接：QuickQuizModule 呼叫此函式直接注入題目並啟動作答
+        window._quickStartWithQuestions = function(questions, userName) {
+            DOM.startBtn.disabled = true;
+            DOM.startBtn.innerText = "測驗生成中...";
+            DOM.startBtn.classList.add('opacity-70', 'cursor-not-allowed');
+            DOM.resumeBtn.classList.add('hidden');
+
+            QuizState = createFreshState();
+            window.QuizState = QuizState;
+            QuizState.finalUserName = userName !== "" ? userName : "匿名";
+            QuizState.shuffledQuestions = questions;
+
+            saveProgress();
+            DOM.screenStart.classList.add('hidden');
+            DOM.screenQuiz.classList.remove('hidden');
+            DOM.screenQuiz.classList.add('flex', 'fade-in-up');
+            updateDimIndicators();  // #9 初始化維度指示器
+            renderQuestion();
+        };
+
+        function renderQuestion() {
+            questionStartTime = Date.now();
+            const q = QuizState.shuffledQuestions[QuizState.currentStep];
+            const total = QuizState.shuffledQuestions.length;
+            DOM.questionCounter.innerText = `Question ${QuizState.currentStep + 1} / ${total}`;
+            DOM.questionText.innerText = q.text;
+            // #2c 動態難度標記 + #10 a11y 螢幕閱讀器公告
+            if (typeof EventBus !== 'undefined') EventBus.emit('question-rendered', { question: q, step: QuizState.currentStep, total: total });
+            if (typeof announceToSR === 'function') announceToSR(`第 ${QuizState.currentStep + 1} 題，共 ${total} 題。${q.text}`);
+
+            if (QuizState.currentStep > 0) DOM.btnBack.classList.remove('hidden');
+            else DOM.btnBack.classList.add('hidden');
+
+            const progress = (QuizState.currentStep / total) * 100;
+            DOM.progressBar.style.width = `${progress}%`;
+            DOM.progressBar.setAttribute('aria-valuenow', Math.round(progress));
+
+            // 更新維度完成度指示器 (#2)
+            // #9 優化：維度指示器改為增量更新，不在 renderQuestion 每次重算
+            // updateDimIndicators() 僅在 startQuiz/resumeQuiz 初始化時呼叫一次
+            updateEstTime(total);
+
+            const milestones = [Math.round(total / 3), Math.round(total * 2 / 3)];
+            const milestoneTexts = ['已完成三分之一！保持直覺作答 🎯', '快要完成了，最後衝刺！🚀'];
+            const mIdx = milestones.indexOf(QuizState.currentStep);
+            if (mIdx !== -1 && !QuizState['_m' + mIdx]) {
+                QuizState['_m' + mIdx] = true;
+                const toast = document.createElement('div');
+                toast.className = 'fixed top-6 left-1/2 -translate-x-1/2 z-50 bg-cyan-500/90 text-white text-sm font-semibold px-6 py-3 rounded-full shadow-lg backdrop-blur-sm fade-in-up';
+                toast.setAttribute('role', 'status');
+                toast.textContent = milestoneTexts[mIdx];
+                document.body.appendChild(toast);
+                setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.5s'; setTimeout(() => toast.remove(), 500); }, 2000);
+            }
+
+            DOM.optionsContainer.innerHTML = ''; 
+            DOM.optionsContainer.className = 'space-y-3 flex-1 flex flex-col justify-start pb-6 slide-in-right';
+
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = "option-btn w-full flex items-center justify-between gap-4 text-left text-slate-200 font-medium py-4 px-6 rounded-2xl text-base md:text-lg leading-relaxed shadow-sm";
+                btn.setAttribute('role', 'radio');
+                btn.setAttribute('aria-checked', 'false');
+                btn.setAttribute('aria-label', opt.text);
+                btn.innerHTML = `<span class="flex-1">${escapeHtml(opt.text)}</span> <span class="key-hint shrink-0">按 ${index + 1}</span>`;
+                btn.addEventListener('mousedown', function(e) {
+                    const ripple = document.createElement('span');
+                    ripple.classList.add('ripple');
+                    const rect = btn.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+                    ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+                    btn.appendChild(ripple);
+                    setTimeout(() => ripple.remove(), 650);
+                });
+                btn.onclick = () => {
+                    if (QuizState.isAnimating) return;
+                    // 觸覺回饋 (#6)
+                    if (navigator.vibrate) navigator.vibrate(15);
+                    handleAnswer(opt.trait, opt.weight, DOM.optionsContainer);
+                };
+                DOM.optionsContainer.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(trait, weight, container) {
+            QuizState.isAnimating = true;
+            const timeTaken = Date.now() - questionStartTime;
+
+            // 取得當前題目的維度，供增量指示器使用
+            const currentQ = QuizState.shuffledQuestions[QuizState.currentStep];
+
+            QuizState.history.push({ trait, weight, timeTaken, dimension: currentQ?.dimension });
+            QuizState.scores[trait] += weight; 
+            
+            if (QuizState.times[trait] !== undefined) {
+                QuizState.times[trait] += timeTaken;
+                QuizState.counts[trait] += 1;
+            }
+
+            QuizState.currentStep++;
+
+            // #9 修復：增量更新維度指示器，不再重跑 O(n) 迴圈
+            if (currentQ?.dimension) _incrementDimIndicator(currentQ.dimension);
+
+            saveProgress();
+            
+            container.classList.remove('slide-in-right');
+            container.classList.add('slide-out-left');
+
+            setTimeout(() => {
+                if (QuizState.currentStep < QuizState.shuffledQuestions.length) renderQuestion();
+                else {
+                    DOM.progressBar.style.width = `100%`;
+                    clearProgress(); 
+                    processAndSaveResult();
+                }
+                QuizState.isAnimating = false;
+            }, 300); 
+        }
+
+        window.goBack = function() {
+            if (QuizState.currentStep === 0 || QuizState.isAnimating) return;
+            const lastAnswer = QuizState.history.pop();
+            
+            QuizState.scores[lastAnswer.trait] -= lastAnswer.weight;
+            if (QuizState.times[lastAnswer.trait] !== undefined) {
+                QuizState.times[lastAnswer.trait] -= lastAnswer.timeTaken;
+                QuizState.counts[lastAnswer.trait] -= 1;
+            }
+            
+            // #9 修復：減量更新維度指示器
+            if (lastAnswer.dimension) _decrementDimIndicator(lastAnswer.dimension);
+
+            QuizState.currentStep--;
+            saveProgress();
+            DOM.optionsContainer.classList.remove('slide-out-left', 'slide-in-right');
+            renderQuestion();
+        };
+
+        // ==========================================
+        // 維度指示器與預估時間 (#2)
+        // ==========================================
+        // #9 優化：改為增量更新，避免每次重跑 O(n) 迴圈
+        // 維護一個 dim 計數器，在 handleAnswer 中呼叫 _incrementDimIndicator
+        const _dimAnsweredCount = { E_I: 0, S_N: 0, T_F: 0, J_P: 0, A_O: 0, H_C: 0 };
+
+        function _applyDimDotStyle(dim, count) {
+            const dot = document.querySelector(`.dim-dot[data-dim="${dim}"]`);
+            if (!dot) return;
+            const ratio = count / QUESTIONS_PER_DIM;
+            if (ratio >= 1) {
+                dot.style.background = 'rgba(34,211,238,0.8)';
+                dot.style.borderColor = 'rgba(34,211,238,0.9)';
+                // 完成時加入 dim-done class 觸發 checkmark 動畫
+                if (!dot.classList.contains('dim-done')) dot.classList.add('dim-done');
+            } else if (ratio > 0) {
+                dot.style.background = `linear-gradient(to top, rgba(34,211,238,0.5) ${ratio*100}%, rgba(255,255,255,0.1) ${ratio*100}%)`;
+                dot.style.borderColor = 'rgba(34,211,238,0.4)';
+                dot.classList.remove('dim-done');
+            } else {
+                dot.style.background = 'rgba(255,255,255,0.05)';
+                dot.style.borderColor = 'rgba(255,255,255,0.15)';
+                dot.classList.remove('dim-done');
+            }
+        }
+
+        // 答題時增量 +1（由 handleAnswer 呼叫）
+        function _incrementDimIndicator(dim) {
+            if (_dimAnsweredCount[dim] !== undefined) {
+                _dimAnsweredCount[dim]++;
+                _applyDimDotStyle(dim, _dimAnsweredCount[dim]);
+            }
+        }
+
+        // 返回上一題時減量 -1（由 goBack 呼叫）
+        function _decrementDimIndicator(dim) {
+            if (_dimAnsweredCount[dim] !== undefined && _dimAnsweredCount[dim] > 0) {
+                _dimAnsweredCount[dim]--;
+                _applyDimDotStyle(dim, _dimAnsweredCount[dim]);
+            }
+        }
+
+        // 重置所有指示器（startQuiz / resumeQuiz 時呼叫）
+        function updateDimIndicators() {
+            const dims = ['E_I', 'S_N', 'T_F', 'J_P', 'A_O', 'H_C'];
+            // 重置計數器
+            dims.forEach(d => { _dimAnsweredCount[d] = 0; });
+            // 從 QuizState.history 重新計算（用於 resume 場景）
+            for (let i = 0; i < QuizState.currentStep; i++) {
+                const dim = QuizState.shuffledQuestions[i]?.dimension;
+                if (dim && _dimAnsweredCount[dim] !== undefined) _dimAnsweredCount[dim]++;
+            }
+            // 套用樣式
+            dims.forEach(d => _applyDimDotStyle(d, _dimAnsweredCount[d]));
+        }
+
+        function updateEstTime(total) {
+            const el = document.getElementById('est-time');
+            if (!el) return;
+            const done = QuizState.currentStep;
+            if (done < 3) { el.textContent = ''; return; }
+            const totalTime = Object.values(QuizState.times).reduce((a, b) => a + b, 0);
+            const avgMs = totalTime / done;
+            const remaining = total - done;
+            const estSec = Math.round((avgMs * remaining) / 1000);
+            if (estSec < 60) el.textContent = `≈ ${estSec} 秒`;
+            else el.textContent = `≈ ${Math.ceil(estSec / 60)} 分鐘`;
+        }
+
+        // ==========================================
+        // 統一的 feature screen 顯示工具（供各模組呼叫）
+        // ==========================================
+        window._showFeatureScreen = function() {
+            ['screen-start', 'screen-quiz', 'screen-loading', 'screen-result'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) { el.classList.add('hidden'); el.classList.remove('flex'); }
+            });
+            let fs = document.getElementById('screen-feature');
+            if (!fs) {
+                fs = document.createElement('div');
+                fs.id = 'screen-feature';
+                document.getElementById('app-container').appendChild(fs);
+            }
+            fs.className = 'flex flex-col w-full flex-1 overflow-y-auto custom-scrollbar';
+            fs.classList.remove('hidden');
+
+            // 自動注入浮動返回首頁按鈕
+            if (!document.getElementById('fab-home')) {
+                const fab = document.createElement('button');
+                fab.id = 'fab-home';
+                fab.setAttribute('aria-label', '返回首頁');
+                fab.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z"></path></svg> 首頁';
+                fab.onclick = function() { window.resetQuiz(); };
+                document.body.appendChild(fab);
+            }
+
+            return fs;
+        };
+
+        window.resetQuiz = function() {
+            if (!document.getElementById('screen-start')) {
+                window.open(window.location.href, "__top");
+                return;
+            }
+
+            // #2b 答題中途退出保護：若正在答題中，二次確認
+            if (QuizState.currentStep > 0 && QuizState.currentStep < (QuizState.shuffledQuestions || []).length) {
+                if (!confirm('⚠️ 你正在答題中，返回首頁將清除所有進度。\n\n確定要離開嗎？')) return;
+            }
+            
+            clearProgress();
+            QuizState = createFreshState();
+            window.QuizState = QuizState;
+            
+            DOM.startBtn.disabled = false;
+            DOM.startBtn.innerText = "開始探索";
+            DOM.startBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+            
+            DOM.screenResult.classList.add('hidden'); DOM.screenResult.classList.remove('flex');
+            DOM.screenLoading.classList.add('hidden'); DOM.screenLoading.classList.remove('flex');
+            DOM.screenQuiz.classList.add('hidden'); DOM.screenQuiz.classList.remove('flex');
+            DOM.screenStart.classList.remove('hidden');
+
+            // 清理 screen-feature（修復：返回首頁後殘留問題）
+            const sf = document.getElementById('screen-feature');
+            if (sf) { sf.classList.add('hidden'); sf.innerHTML = ''; }
+
+            // 移除浮動返回首頁按鈕
+            const fab = document.getElementById('fab-home');
+            if (fab) fab.remove();
+
+            // 關閉所有 v7 modal overlay
+            document.querySelectorAll('.modal-overlay').forEach(m => m.remove());
+
+            document.getElementById('admin-panel').classList.add('hidden');
+            document.getElementById('admin-lock').classList.remove('hidden');
+            document.getElementById('admin-content').classList.add('hidden');
+            
+            
+            
+            if (window.myRadarChart) window.myRadarChart.destroy();
+            if (window.myFunctionsChart) window.myFunctionsChart.destroy();
+
+            // #1 修復：清除快速版 flag，避免污染下一次完整版
+            window.isQuickQuiz = false;
+
+            // #3 修復：hidden 與 flex 互斥，不可同時加入；分開處理
+            // #2 修復：同時隱藏 social-card-btn
+            ['download-btn', 'export-video-btn', 'share-btn', 'social-card-btn'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.classList.add('hidden');
+                    el.classList.remove('flex', 'fade-in-up');
+                }
+            });
+        };
+
+        // ==========================================
+        // 歷史紀錄
+        // ==========================================
+        window.clearAllHistory = function() {
+            if (confirm("確定要清除所有裝置上的測驗紀錄嗎？此動作無法復原。")) {
+                localStorage.removeItem('mbti64_history');
+                showHistory(); 
+            }
+        };
+
+        window.showHistory = function() {
+            const history = JSON.parse(safeLocalGet('mbti64_history') || '[]');
+            const listEl = document.getElementById('history-list');
+            
+            if (history.length === 0) {
+                listEl.innerHTML = '<div class="text-slate-400 text-center py-10 text-sm bg-slate-800/30 rounded-xl border border-white/5">尚未有測驗紀錄，趕快開始探索吧！</div>';
+            } else {
+                let html = `<div class="flex justify-end mb-3"><button onclick="clearAllHistory()" class="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1 transition-colors"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>清除所有紀錄</button></div>`;
+                html += history.map((record, index) => {
+                    const safeName = escapeHtml(record.name !== '匿名' ? record.name : '匿名訪客');
+                    return `<div class="glass-panel p-4 rounded-xl flex justify-between items-center hover:bg-slate-800 transition cursor-pointer border border-transparent hover:border-cyan-500/50 shadow-sm" onclick='loadRecord(${index})'><div><div class="text-[10px] text-slate-400 mb-0.5">${escapeHtml(record.date)}</div><div class="font-black text-lg text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-indigo-300">${escapeHtml(record.fullCode)}</div><div class="text-xs text-slate-300 mt-1">${safeName}</div></div><div class="bg-white/5 p-2 rounded-full"><svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></div></div>`;
+                }).join('');
+                listEl.innerHTML = html;
+            }
+            document.getElementById('modal-history').classList.remove('hidden');
+        };
+
+        window.closeHistory = function() { document.getElementById('modal-history').classList.add('hidden'); };
+        window.loadRecord = function(index) {
+            const history = JSON.parse(safeLocalGet('mbti64_history') || '[]');
+            const record = history[index];
+            if (record) {
+                closeHistory(); DOM.screenStart.classList.add('hidden');
+                QuizState.finalUserName = record.name; 
+                QuizState.scores = record.scores;
+                QuizState.counts = record.counts || {};
+                showResultScreen(record.fullCode, record.dim5, record.dim6, record.baseMbti);
+            }
+        };
+
+        // ==========================================
+        // 結果處理
+        // ==========================================
+        function processAndSaveResult() {
+            DOM.screenQuiz.classList.add('hidden'); DOM.screenQuiz.classList.remove('flex');
+            DOM.screenLoading.classList.remove('hidden'); DOM.screenLoading.classList.add('flex');
+
+            const loadingTexts = [`正在彙整 ${QuizState.shuffledQuestions.length} 項行為數據...`, "分析榮格認知功能堆疊...", "計算決策與待人維度清晰度...", "生成您的專屬擴展人格圖鑑..."];
+            let textIndex = 0;
+            const subtextEl = document.getElementById('loading-subtext');
+            subtextEl.innerText = loadingTexts[0];
+            
+            if (loadingInterval) clearInterval(loadingInterval);
+            loadingInterval = setInterval(() => { textIndex = (textIndex + 1) % loadingTexts.length; subtextEl.innerText = loadingTexts[textIndex]; }, 1200);
+
+            const getHigher = (a, b, defaultTrait) => {
+                const diff = QuizState.scores[a] - QuizState.scores[b];
+                if (diff > 0) return a;
+                if (diff < 0) return b;
+
+                const avgTimeA = QuizState.counts[a] ? QuizState.times[a] / QuizState.counts[a] : 99999;
+                const avgTimeB = QuizState.counts[b] ? QuizState.times[b] / QuizState.counts[b] : 99999;
+                const timeDiff = Math.abs(avgTimeA - avgTimeB);
+
+                if (timeDiff < 200) return defaultTrait;
+
+                return avgTimeA < avgTimeB ? a : b;
+            };
+
+            const mbti = getHigher('E', 'I', 'I') + getHigher('S', 'N', 'N') + getHigher('T', 'F', 'F') + getHigher('J', 'P', 'P');
+            const dim5 = getHigher('A', 'O', 'A');
+            const dim6 = getHigher('H', 'C', 'H');
+
+            const totalDuration = Object.values(QuizState.times).reduce((a, b) => a + b, 0);
+            const payload = {
+                userName: QuizState.finalUserName,
+                finalCode: mbti, dim5: dim5, dim6: dim6,
+                scores: QuizState.scores,
+                times: QuizState.times,
+                totalDuration: totalDuration,
+                // #13 修復：傳入實際題數，供 GAS 正確計算「平均單題作答(秒)」
+                questionCount: QuizState.shuffledQuestions.length,
+                sessionToken: USER_SESSION_TOKEN,
+                quizVersion: QUIZ_VERSION
+            };
+
+            const finalize = (response) => {
+                clearInterval(loadingInterval);
+                DOM.screenLoading.classList.add('hidden'); 
+                DOM.screenLoading.classList.remove('flex');
+                
+                if (response && response.success === false) {
+                    console.warn("雲端儲存異常:", response.message);
+                    alert("雲端資料庫儲存失敗，請檢查權限或試算表設定！\n錯誤訊息：" + response.message + "\n\n(系統仍會為您顯示本次測驗結果)");
+                }
+                
+                const history = JSON.parse(safeLocalGet('mbti64_history') || '[]');
+                const now = new Date();
+                const dateString = `${now.getFullYear()}/${(now.getMonth()+1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+                
+                history.unshift({ date: dateString, name: QuizState.finalUserName, baseMbti: mbti, dim5: dim5, dim6: dim6, fullCode: `${mbti}-${dim5}${dim6}`, scores: QuizState.scores, counts: QuizState.counts });
+                if(history.length > 10) history.length = 10;
+                safeLocalSet('mbti64_history', JSON.stringify(history));
+
+                showResultScreen(`${mbti}-${dim5}${dim6}`, dim5, dim6, mbti);
+            };
+
+            if (typeof google !== 'undefined') {
+                google.script.run.withSuccessHandler(finalize).withFailureHandler(err => finalize({success: false, message: "網路異常"})).saveResult(payload);
+            } else { setTimeout(() => finalize({ success: true }), 2500); }
+        }
+
+        // #4 修復：QUESTIONS_PER_DIM 已在頂層統一定義，此處不再重複
+        function calculatePercentage(scoreA, scoreB) {
+            const base = Math.round(QUESTIONS_PER_DIM * 0.2); 
+            const total = scoreA + scoreB + (base*2);
+            return [Math.round(((scoreA + base) / total) * 100), Math.round(((scoreB + base) / total) * 100)];
+        }
+        function getIntensityLabel(percent) { return percent >= 90 ? "極度清晰" : (percent >= 75 ? "清晰" : (percent >= 60 ? "中度" : "輕微")); }
+
+        function _parseTemplate(text, dim5, dim6) {
+            if (!text) return '';
+            let res = text;
+            res = res.replace(/\{\{if_A\}\}([\s\S]*?)\{\{endif_A\}\}/g, dim5 === 'A' ? '$1' : '');
+            res = res.replace(/\{\{if_O\}\}([\s\S]*?)\{\{endif_O\}\}/g, dim5 === 'O' ? '$1' : '');
+            res = res.replace(/\{\{if_H\}\}([\s\S]*?)\{\{endif_H\}\}/g, dim6 === 'H' ? '$1' : '');
+            res = res.replace(/\{\{if_C\}\}([\s\S]*?)\{\{endif_C\}\}/g, dim6 === 'C' ? '$1' : '');
+            return res;
+        }
+
+        // ==========================================
+        // 結果頁渲染
+        // ==========================================
+        function showResultScreen(code, dim5, dim6, baseMbti) {
+            // #1 Lazy Loading：確保結果資料已載入
+            if (typeof ensureResultData === 'function' && (!window.sysData || !window.sysData.mbtiBase || Object.keys(window.sysData.mbtiBase).length === 0)) {
+                ensureResultData().then(function() {
+                    _renderResultScreen(code, dim5, dim6, baseMbti);
+                }).catch(function(err) {
+                    console.error('Result data loading failed, using cached:', err);
+                    _renderResultScreen(code, dim5, dim6, baseMbti);
+                });
+                return;
+            }
+            _renderResultScreen(code, dim5, dim6, baseMbti);
+        }
+
+        function _renderResultScreen(code, dim5, dim6, baseMbti) {
+            DOM.screenResult.classList.remove('hidden'); DOM.screenResult.classList.add('flex');
+            // [修復4] 同步 finalCode 到 QuizState 並更新 window.QuizState，供 ExplorerModule 使用
+            QuizState.finalCode = code;
+            QuizState.finalDim5 = dim5;
+            QuizState.finalDim6 = dim6;
+            window.QuizState = QuizState;
+            // 漸進式揭曉動畫 (#3)
+            const captureArea = document.getElementById('capture-area');
+            if (captureArea) captureArea.classList.add('reveal-sequence');
+
+            // 視覺差異化 (Visual Differentiation)
+            const appContainer = document.getElementById('app-container') || document.body;
+            appContainer.classList.remove('theme-glow-h', 'theme-glow-c', 'theme-fx-a', 'theme-fx-o');
+            if (dim6 === 'H') appContainer.classList.add('theme-glow-h');
+            if (dim6 === 'C') appContainer.classList.add('theme-glow-c');
+            if (dim5 === 'A') appContainer.classList.add('theme-fx-a');
+            if (dim5 === 'O') appContainer.classList.add('theme-fx-o');
+
+            const baseData = sysData.mbtiBase[baseMbti] || { name: "未知", core: "", persona: "", success: "", relationships: "", strengths: [], weaknesses: [], rules: [], functions: {} };
+            const modData = sysData.suffixModifiers[dim5 + dim6] || { titleSuffix: "", traitDesc: "" };
+
+            document.getElementById('result-user-name').innerText = QuizState.finalUserName !== "匿名" ? `專屬解析：${QuizState.finalUserName}` : '';
+            const avatarImg = document.getElementById('result-avatar');
+            if (avatarImg) {
+                const seed = QuizState.finalUserName !== "匿名" ? encodeURIComponent(QuizState.finalUserName) : Math.random().toString(36).substring(7);
+                avatarImg.src = `https://api.dicebear.com/7.x/bottts/svg?seed=${seed}&backgroundColor=0f172a`;
+                avatarImg.classList.remove('hidden');
+            }
+            // 逐字元飛入動畫
+            const resultCodeEl = document.getElementById('result-code');
+            resultCodeEl.classList.add('result-burst');
+            resultCodeEl.innerHTML = code.split('').map((c, i) => `<span class="char-fly-in" style="animation-delay:${0.05 + i*0.07}s">${escapeHtml(c)}</span>`).join('');
+            // 打字機效果稱號
+            const resultTitleEl = document.getElementById('result-title');
+            const titleText = baseData.name + modData.titleSuffix;
+            resultTitleEl.textContent = '';
+            resultTitleEl.classList.add('typewriter-text');
+            setTimeout(() => { resultTitleEl.textContent = titleText; resultTitleEl.classList.add('typing'); }, 600);
+
+            const dimensions = [
+                { k1:'E',l1:'外向 (Extraversion)', k2:'I',l2:'內向 (Introversion)' }, 
+                { k1:'S',l1:'實感 (Sensing)',      k2:'N',l2:'直覺 (Intuition)' },
+                { k1:'T',l1:'思考 (Thinking)',     k2:'F',l2:'情感 (Feeling)' }, 
+                { k1:'J',l1:'判斷 (Judging)',      k2:'P',l2:'感知 (Perceiving)' },
+                { k1:'A',l1:'果斷 (Assertive)',    k2:'O',l2:'審慎 (Observant)' }, 
+                { k1:'H',l1:'溫暖 (Harmony)',      k2:'C',l2:'理性 (Cognitive)' }
+            ];
+
+            let scalesHtml = ''; let hasBalanced = false;
+            dimensions.forEach(dim => {
+                const [pct1, pct2] = calculatePercentage(QuizState.scores[dim.k1], QuizState.scores[dim.k2]);
+                if (Math.abs(pct1 - pct2) <= 10) hasBalanced = true;
+                const isDom1 = pct1 >= pct2;
+                const domLabel = isDom1 ? dim.l1 : dim.l2, domPct = isDom1 ? pct1 : pct2;
+                const subLabel = isDom1 ? dim.l2 : dim.l1, subPct = isDom1 ? pct2 : pct1;
+                
+                const cnt1 = QuizState.counts[dim.k1] || 0;
+                const cnt2 = QuizState.counts[dim.k2] || 0;
+                const totalCnt = cnt1 + cnt2;
+                let consistency = 0;
+                
+                if (totalCnt > 0) {
+                    consistency = Math.max(cnt1, cnt2) / totalCnt;
+                } else {
+                    const score1 = QuizState.scores[dim.k1] || 0;
+                    const score2 = QuizState.scores[dim.k2] || 0;
+                    const totalScore = score1 + score2;
+                    consistency = totalScore > 0 ? Math.max(score1, score2) / totalScore : 0.5;
+                }
+
+                const conLabel = consistency >= 0.8 ? '高一致' : (consistency >= 0.6 ? '' : '⚠ 搖擺');
+                const conColor = consistency >= 0.8 ? 'text-emerald-400' : (consistency >= 0.6 ? '' : 'text-orange-400');
+                const conBadge = conLabel ? `<span class="text-[10px] ${conColor} ml-2">${conLabel}</span>` : '';
+                
+                scalesHtml += `
+                    <div class="mb-3">
+                        <div class="flex justify-between text-sm mb-1 text-slate-300">
+                            <span class="font-bold">${escapeHtml(domLabel)} ${domPct}% <span class="text-[10px] text-cyan-400 opacity-80 font-normal ml-1">(${getIntensityLabel(domPct)})</span>${conBadge}</span>
+                            <span class="text-xs text-slate-400">${escapeHtml(subLabel)} ${subPct}%</span>
+                        </div>
+                        <div class="w-full bg-slate-800/80 h-2.5 rounded-full flex overflow-hidden border border-white/5">
+                            <div class="bg-gradient-to-r from-cyan-400 to-indigo-500 h-full transition-all duration-1000" style="width: ${domPct}%"></div>
+                            <div class="bg-slate-700 h-full" style="width: ${subPct}%"></div>
+                        </div>
+                    </div>`;
+            });
+            document.getElementById('result-scales').innerHTML = scalesHtml;
+            document.getElementById('balanced-notice').classList.toggle('hidden', !hasBalanced);
+
+            let coreText = baseData.core || '';
+            if ((baseMbti.includes('F') && dim6 === 'C') || (baseMbti.includes('T') && dim6 === 'H')) {
+                coreText = "你的內在邏輯與外在表現存在一種「迷人的張力」。" + coreText;
+            }
+
+            const dim5Label = dim5 === 'A' ? 'A · 果斷型' : 'O · 審慎型';
+            const dim5Explain = dim5 === 'A'
+                ? '面對選擇傾向快速收斂、果斷行動，把決策卡關視為浪費。能量花在執行，而非無止境地評估。'
+                : '決策時謹慎而反覆，廣泛蒐集資訊並多方推演，對不確定性高度敏感。深思熟慮是優勢，但也容易落入分析癱瘓。';
+            const dim6Label = dim6 === 'H' ? 'H · 溫暖型' : 'C · 理性型';
+            const dim6Explain = dim6 === 'H'
+                ? '人際互動中優先顧及情感與和諧，傾向以包容取代對抗，照顧他人感受是本能。衝突讓你不舒服，委婉是你的溝通語言。'
+                : '互動中偏向直接表達立場，優先考慮真實與效率。情感壓力不會讓你妥協，清晰邊界是你維持自我的方式。';
+
+            document.getElementById('compare-16-text').innerHTML =
+                `在傳統模型中，您屬於<strong>【${escapeHtml(baseMbti)} ${escapeHtml(baseData.name)}】</strong>。<br>這代表了您的底層認知邏輯：${escapeHtml(coreText)}`;
+            document.getElementById('compare-64-text').innerHTML =
+                `加入兩個擴展維度後，您進化為<strong>【${escapeHtml(code)} ${escapeHtml(baseData.name)}${escapeHtml(modData.titleSuffix)}】</strong>。` +
+                `<br><br><span class="text-cyan-300 font-semibold">第五維度・決策模式（${escapeHtml(dim5Label)}）</span><br>${escapeHtml(dim5Explain)}` +
+                `<br><br><span class="text-indigo-300 font-semibold">第六維度・待人態度（${escapeHtml(dim6Label)}）</span><br>${escapeHtml(dim6Explain)}` +
+                `<br><br><span class="text-yellow-300 font-semibold">兩者疊加的核心氣質：</span>${escapeHtml(modData.traitDesc)}`;
+
+            // 64 型專屬深度解析
+            const extFields = [
+                {id:'res-ext-social',key:'socialStyle'}, {id:'res-ext-conflict',key:'conflictStyle'},
+                {id:'res-ext-decision',key:'decisionProcess'}, {id:'res-ext-relationship',key:'relationshipStyle'},
+                {id:'res-ext-superpower',key:'superpower'}, {id:'res-ext-blindspot',key:'blindSpot'},
+                {id:'res-ext-stress',key:'stressResponse'}, {id:'res-ext-growth',key:'growthKey'}
+            ];
+            extFields.forEach(f => {
+                const el = document.getElementById(f.id);
+                if (el) el.textContent = modData[f.key] || '';
+            });
+            document.getElementById('res-ext-strengths').innerHTML = (modData.extraStrengths || []).map(s => `<li>${escapeHtml(s)}</li>`).join('');
+            document.getElementById('res-ext-weaknesses').innerHTML = (modData.extraWeaknesses || []).map(s => `<li>${escapeHtml(s)}</li>`).join('');
+
+            const typeSpecific = modData.typeSpecific || {};
+            const tsEl = document.getElementById('res-type-specific');
+            const tsBlock = document.getElementById('ext-type-specific');
+            if (tsEl && typeSpecific[baseMbti]) {
+                tsEl.textContent = typeSpecific[baseMbti];
+                if (tsBlock) tsBlock.classList.remove('hidden');
+            } else if (tsBlock) { tsBlock.classList.add('hidden'); }
+
+            const crossType = modData.crossType || {};
+            let crossTexts = [];
+            for (const letter of baseMbti) { if (crossType[letter]) crossTexts.push(crossType[letter]); }
+            const crossEl = document.getElementById('res-cross-type');
+            if (crossEl) {
+                if (crossTexts.length > 0) {
+                    crossEl.innerHTML = crossTexts.map(t => `<p class="mb-3 last:mb-0 leading-relaxed">${escapeHtml(t)}</p>`).join('');
+                } else { crossEl.textContent = modData.traitDesc || ''; }
+            }
+            document.getElementById('section-64-deep').classList.toggle('hidden', !modData.socialStyle);
+
+            // 渲染文本段落 (套用動態變數模板)
+            const elPortrait = document.getElementById('res-portrait');
+            if(elPortrait) elPortrait.innerHTML = textToHtml(_parseTemplate(baseData.portrait, dim5, dim6));
+            
+            const elFlourishing = document.getElementById('res-flourishing');
+            if(elFlourishing) elFlourishing.innerHTML = (baseData.flourishing_gifts || []).map(s => `<li>${escapeHtml(_parseTemplate(s, dim5, dim6))}</li>`).join('');
+            
+            const elProblemIssues = document.getElementById('res-problem-issues');
+            if(elProblemIssues) elProblemIssues.innerHTML = (baseData.problem_issues || []).map(s => `<li>${escapeHtml(_parseTemplate(s, dim5, dim6))}</li>`).join('');
+            
+            const elProblemExplanation = document.getElementById('res-problem-explanation');
+            if(elProblemExplanation) elProblemExplanation.innerHTML = textToHtml(_parseTemplate(baseData.problem_explanation, dim5, dim6));
+
+            const textFields = [
+                {id:'res-persona',key:'persona'}, {id:'res-success',key:'success'},
+                {id:'res-relationships',key:'relationships'}, {id:'res-awakened',key:'awakened'},
+                {id:'res-stress',key:'stress_behavior'}, {id:'res-career-drive',key:'career_drive'}
+            ];
+            textFields.forEach(field => {
+                const el = document.getElementById(field.id);
+                if(el) el.innerHTML = textToHtml(_parseTemplate(baseData[field.key], dim5, dim6));
+            });
+
+            let baseWeaknesses = baseData.weaknesses || [];
+            if (modData.removedWeaknesses) {
+                baseWeaknesses = baseWeaknesses.filter(w => !modData.removedWeaknesses.includes(w));
+            }
+
+            document.getElementById('res-strengths').innerHTML = (baseData.strengths || []).map(s => `<li>${escapeHtml(_parseTemplate(s, dim5, dim6))}</li>`).join('');
+            document.getElementById('res-weaknesses').innerHTML = baseWeaknesses.map(w => `<li>${escapeHtml(_parseTemplate(w, dim5, dim6))}</li>`).join('');
+
+            const lowTraits = [];
+            if (QuizState.scores.E < QuizState.scores.I) lowTraits.push('外向');
+            if (QuizState.scores.T < QuizState.scores.F) lowTraits.push('邏輯');
+            if (QuizState.scores.A < QuizState.scores.O) lowTraits.push('果斷');
+            if (QuizState.scores.H < QuizState.scores.C) lowTraits.push('溫暖');
+
+            const allRules = baseData.rules || [];
+            document.getElementById('res-rules').innerHTML = allRules.map((r, i) => {
+                const isPersonalized = lowTraits.some(lt => r.includes(lt));
+                return `<li class="${isPersonalized ? 'text-cyan-200 font-medium' : ''}"><span class="text-indigo-400 font-bold mr-1">${i+1}.</span>${escapeHtml(_parseTemplate(r, dim5, dim6))}</li>`;
+            }).join('');
+            
+            // 觸發 AI 神諭
+            const aiContent = document.getElementById('ai-synthesis-content');
+            if (aiContent) {
+                if (typeof google !== 'undefined') {
+                    aiContent.innerHTML = '<span class="animate-pulse text-indigo-400">正在與高我連結，為您解讀靈魂密碼...</span>';
+                    google.script.run.withSuccessHandler(res => {
+                        if (res && res.success && res.answer) {
+                            aiContent.innerHTML = '<div class="text-indigo-100 font-medium">' + escapeHtml(res.answer).replace(/\n/g, '<br>') + '</div>';
+                        } else {
+                            aiContent.innerHTML = '<span class="text-slate-500">（AI 解析暫時無法取得）</span>';
+                        }
+                    }).withFailureHandler(err => {
+                        aiContent.innerHTML = '<span class="text-slate-500">（網路連線異常，神諭未降臨）</span>';
+                    }).generate64TypeSynthesis(code, QuizState.finalUserName);
+                } else {
+                    aiContent.innerHTML = '<span class="text-slate-500">（本地開發環境，跳過 AI 呼叫）</span>';
+                }
+            }
+            
+            const growthEl = document.getElementById('res-growth-focus');
+            if (growthEl) growthEl.textContent = baseData.growth_focus || '';
+            
+            const fns = baseData.functions || {};
+            document.getElementById('jungian-functions').innerHTML = `
+                <div class="glass-panel py-2 rounded-lg font-medium text-slate-300 border-b border-b-cyan-500/50"><span class="block text-[10px] text-slate-500 mb-0.5">主導</span>${escapeHtml(fns.dom)}</div>
+                <div class="glass-panel py-2 rounded-lg font-medium text-slate-300 border-b border-b-blue-500/50"><span class="block text-[10px] text-slate-500 mb-0.5">輔助</span>${escapeHtml(fns.aux)}</div>
+                <div class="glass-panel py-2 rounded-lg font-medium text-slate-300 border-b border-b-indigo-500/50"><span class="block text-[10px] text-slate-500 mb-0.5">第三</span>${escapeHtml(fns.ter)}</div>
+                <div class="glass-panel py-2 rounded-lg font-medium text-slate-300 border-b border-b-purple-500/50"><span class="block text-[10px] text-slate-500 mb-0.5">劣勢</span>${escapeHtml(fns.inf)}</div>
+            `;
+            
+            function waitForChart(cb) {
+                if (typeof Chart !== 'undefined') { cb(); return; }
+                const check = setInterval(() => { if (typeof Chart !== 'undefined') { clearInterval(check); cb(); } }, 100);
+            }
+            waitForChart(() => {
+                renderRadarChart();
+                renderFunctionsChart(fns);
+            });
+
+            // 渲染名人/角色匹配
+            renderCelebMatch(baseMbti, dim5, dim6);
+
+            // 渲染維度翻轉探索器 (#14)
+            if (window.ExplorerModule) {
+                try { ExplorerModule.renderExplorer(baseMbti, dim5, dim6); } catch(e) { console.warn('Explorer 模組載入失敗:', e); }
+            }
+
+            // 渲染反饋表單 (#17)
+            if (window.FeedbackModule) {
+                try { FeedbackModule.renderFeedbackForm(code); } catch(e) { console.warn('Feedback 模組載入失敗:', e); }
+            }
+
+            // ==========================================
+            // 快速版限制：只顯示摘要，隱藏所有深度分析
+            // ==========================================
+            if (window.isQuickQuiz) {
+                _applyQuickQuizRestrictions(code);
+            }
+
+            // 社群分享卡片按鈕顯示
+            const socialBtn = document.getElementById('social-card-btn');
+            if (socialBtn) { socialBtn.classList.remove('hidden'); socialBtn.classList.add('flex', 'fade-in-up'); }
+
+            // 結果頁滾動入場動畫
+            requestAnimationFrame(() => {
+                const sections = document.querySelectorAll('#capture-area > div, #capture-area > .accordion-section, #celeb-match-section');
+                sections.forEach(el => el.classList.add('scroll-reveal'));
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('revealed');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+                sections.forEach(el => observer.observe(el));
+            });
+        }
+
+        // ==========================================
+        // 快速版結果限制函式
+        // ==========================================
+        function _applyQuickQuizRestrictions(code) {
+            const captureArea = document.getElementById('capture-area');
+            if (!captureArea) return;
+
+            // 1. 隱藏所有深度分析的 accordion section
+            const sectionsToHide = [
+                '#section-64-deep',                          // 64型深度解析
+                '.accordion-section'                          // 所有折疊區塊（人格總評、天賦盲點、成長法則等）
+            ];
+            sectionsToHide.forEach(selector => {
+                captureArea.querySelectorAll(selector).forEach(el => {
+                    el.style.display = 'none';
+                });
+            });
+
+            // 2. 隱藏人格深度對比解析（16型 vs 64型）
+            const compareSection = captureArea.querySelector('.glass-card.rounded-2xl.p-6.mb-8');
+            if (compareSection) compareSection.style.display = 'none';
+
+            // 3. 隱藏成長法則區塊
+            const rulesSection = captureArea.querySelector('.bg-gradient-to-br.from-slate-800');
+            if (rulesSection) rulesSection.style.display = 'none';
+
+            // 4. 隱藏名人匹配（快速版樣本數不足，結果參考性低）
+            const celebSection = document.getElementById('celeb-match-section');
+            if (celebSection) celebSection.style.display = 'none';
+
+            // 5. 隱藏維度探索器
+            const explorer = document.getElementById('dimension-explorer');
+            if (explorer) explorer.style.display = 'none';
+
+            // 6. 隱藏反饋表單
+            const feedback = document.getElementById('feedback-form-container');
+            if (feedback) feedback.style.display = 'none';
+
+            // 7. 插入快速版升級橫幅（放在量表之後）
+            const scalesSection = captureArea.querySelector('#result-scales')?.closest('.w-full.mb-8');
+            const upgradeBanner = document.createElement('div');
+            upgradeBanner.id = 'quick-quiz-upgrade-banner';
+            upgradeBanner.className = 'w-full relative z-10 mb-6 fade-in-up';
+            upgradeBanner.innerHTML = `
+                <div class="rounded-2xl overflow-hidden border border-cyan-500/30" style="background: linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(30,27,75,0.95) 100%);">
+                    <div class="px-5 py-4 border-b border-white/5 flex items-center gap-3">
+                        <span style="font-size:20px">⚡</span>
+                        <div>
+                            <p class="text-xs font-bold text-cyan-300 tracking-widest uppercase">快速版結果</p>
+                            <p class="text-xs text-slate-400 mt-0.5">僅基於每維度 3 題（共 18 題）</p>
+                        </div>
+                        <span class="ml-auto text-[10px] px-2 py-1 rounded-full bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/30">18 題</span>
+                    </div>
+
+                    <div class="p-5">
+                        <p class="text-sm text-slate-300 leading-relaxed mb-4">
+                            你的 <strong class="text-white">${escapeHtml(code)}</strong> 初步結果已生成。快速版提供基本的六維度分析，但以下內容需要完整版（72 題）才能解鎖：
+                        </p>
+
+                        <div class="grid grid-cols-2 gap-2 mb-5">
+                            ${[
+                                ['🧬','64型深度解析'],['📖','完整人格總評'],['💎','核心天賦與盲點'],
+                                ['🌱','專屬成長法則'],['💼','職涯天賦分析'],['✨','高階覺醒狀態'],
+                                ['⭐','名人/角色匹配'],['🔗','交叉類型動態']
+                            ].map(([icon, label]) => `
+                                <div class="flex items-center gap-2 p-2.5 rounded-lg bg-slate-800/60 border border-slate-700/50">
+                                    <span style="font-size:14px;filter:grayscale(1);opacity:0.5">${icon}</span>
+                                    <span class="text-xs text-slate-400">${label}</span>
+                                    <span class="ml-auto text-[10px] text-amber-400/70">🔒</span>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <button onclick="window.QuickQuizModule && window.QuickQuizModule.promptFullQuiz()"
+                            class="w-full bg-gradient-to-r from-cyan-500 to-indigo-500 hover:from-cyan-400 hover:to-indigo-400 text-white font-bold py-3.5 px-6 rounded-xl transition-all duration-300 text-sm shadow-[0_0_20px_rgba(56,189,248,0.25)] flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            解鎖完整分析（72 題 · 約 8 分鐘）
+                        </button>
+                        <p class="text-center text-xs text-slate-500 mt-2">完整版包含 8 大深度解析模組</p>
+                    </div>
+                </div>
+            `;
+
+            // 插入在量表之後
+            if (scalesSection && scalesSection.nextSibling) {
+                captureArea.insertBefore(upgradeBanner, scalesSection.nextSibling);
+            } else {
+                captureArea.appendChild(upgradeBanner);
+            }
+        }
+
+        function renderRadarChart() {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            if (window.myRadarChart) window.myRadarChart.destroy();
+            const getP = (k1, k2) => calculatePercentage(QuizState.scores[k1], QuizState.scores[k2])[0];
+            
+            window.myRadarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['E 外向', 'N 直覺', 'T 思考', 'J 判斷', 'A 果斷', 'H 溫暖'],
+                    datasets: [
+                        { label: '主要傾向 (%)', data: [getP('E','I'), getP('N','S'), getP('T','F'), getP('J','P'), getP('A','O'), getP('H','C')], backgroundColor: 'rgba(56, 189, 248, 0.3)', borderColor: 'rgba(56, 189, 248, 1)', pointBackgroundColor: '#fff', borderWidth: 2 },
+                        { label: '潛藏對立面 (%)', data: [getP('I','E'), getP('S','N'), getP('F','T'), getP('P','J'), getP('O','A'), getP('C','H')], backgroundColor: 'rgba(99, 102, 241, 0.1)', borderColor: 'rgba(99, 102, 241, 0.5)', pointBackgroundColor: '#0f172a', borderWidth: 1, borderDash: [5, 5] }
+                    ]
+                },
+                options: {
+                    layout: { padding: window.innerWidth < 768 ? 20 : 10 },
+                    animation: { duration: 1200, onComplete: () => {
+                        document.getElementById('download-btn').classList.remove('hidden'); document.getElementById('download-btn').classList.add('flex', 'fade-in-up'); document.getElementById('export-video-btn').classList.remove('hidden'); document.getElementById('export-video-btn').classList.add('flex', 'fade-in-up');
+                        document.getElementById('share-btn').classList.remove('hidden'); document.getElementById('share-btn').classList.add('flex', 'fade-in-up');
+                        const inviteBtn = document.getElementById('invite-partner-btn');
+                        if (inviteBtn) { inviteBtn.classList.remove('hidden'); inviteBtn.classList.add('flex', 'fade-in-up'); }
+                    }},
+                    scales: { r: { min: 0, max: 100, angleLines: { color: 'rgba(255, 255, 255, 0.1)' }, grid: { color: 'rgba(255, 255, 255, 0.1)' }, pointLabels: { color: 'rgba(255, 255, 255, 0.8)', font: { size: window.innerWidth < 768 ? 10 : 12 } }, ticks: { display: false, stepSize: 20 } } },
+                    plugins: { 
+                        legend: { labels: { color: 'rgba(255, 255, 255, 0.8)' } },
+                        tooltip: { callbacks: { label: function(context) { return context.dataset.label + ': ' + context.raw + '%'; } } }
+                    }
+                }
+            });
+        }
+
+        function renderFunctionsChart(fns) {
+            const ctx = document.getElementById('functionsChart').getContext('2d');
+            if (window.myFunctionsChart) window.myFunctionsChart.destroy();
+
+            const fnScoreMap = {
+                'Fe': () => { const [p]=calculatePercentage(QuizState.scores.F,QuizState.scores.T); const [e]=calculatePercentage(QuizState.scores.E,QuizState.scores.I); return (p*0.7+e*0.3); },
+                'Fi': () => { const [p]=calculatePercentage(QuizState.scores.F,QuizState.scores.T); const [i]=calculatePercentage(QuizState.scores.I,QuizState.scores.E); return (p*0.7+i*0.3); },
+                'Te': () => { const [p]=calculatePercentage(QuizState.scores.T,QuizState.scores.F); const [e]=calculatePercentage(QuizState.scores.E,QuizState.scores.I); return (p*0.7+e*0.3); },
+                'Ti': () => { const [p]=calculatePercentage(QuizState.scores.T,QuizState.scores.F); const [i]=calculatePercentage(QuizState.scores.I,QuizState.scores.E); return (p*0.7+i*0.3); },
+                'Se': () => { const [p]=calculatePercentage(QuizState.scores.S,QuizState.scores.N); const [e]=calculatePercentage(QuizState.scores.E,QuizState.scores.I); return (p*0.7+e*0.3); },
+                'Si': () => { const [p]=calculatePercentage(QuizState.scores.S,QuizState.scores.N); const [i]=calculatePercentage(QuizState.scores.I,QuizState.scores.E); return (p*0.7+i*0.3); },
+                'Ne': () => { const [p]=calculatePercentage(QuizState.scores.N,QuizState.scores.S); const [e]=calculatePercentage(QuizState.scores.E,QuizState.scores.I); return (p*0.7+e*0.3); },
+                'Ni': () => { const [p]=calculatePercentage(QuizState.scores.N,QuizState.scores.S); const [i]=calculatePercentage(QuizState.scores.I,QuizState.scores.E); return (p*0.7+i*0.3); }
+            };
+
+            const getFnScore = (fnStr) => {
+                const code = (fnStr || '').split(' ')[0];
+                return fnScoreMap[code] ? Math.round(fnScoreMap[code]()) : 50;
+            };
+
+            const stackWeights = [1.0, 0.85, 0.65, 0.45];
+            const rawScores = [
+                { label: '主導 ' + (fns.dom||'').split(' ')[0], raw: getFnScore(fns.dom), color: 'rgba(56, 189, 248, 0.8)' },
+                { label: '輔助 ' + (fns.aux||'').split(' ')[0], raw: getFnScore(fns.aux), color: 'rgba(59, 130, 246, 0.8)' },
+                { label: '第三 ' + (fns.ter||'').split(' ')[0], raw: getFnScore(fns.ter), color: 'rgba(99, 102, 241, 0.8)' },
+                { label: '劣勢 ' + (fns.inf||'').split(' ')[0], raw: getFnScore(fns.inf), color: 'rgba(168, 85, 247, 0.8)' }
+            ];
+            const data = rawScores.map((d, i) => ({ ...d, val: Math.min(98, Math.max(10, Math.round(d.raw * stackWeights[i]))) }));
+
+            window.myFunctionsChart = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: data.map(d => d.label), datasets: [{ data: data.map(d => d.val), backgroundColor: data.map(d => d.color), borderRadius: 4, barThickness: window.innerWidth < 768 ? 12 : 16 }] },
+                options: {
+                    indexAxis: 'y', responsive: true, maintainAspectRatio: false, animation: { duration: 1500, easing: 'easeOutQuart' },
+                    scales: {
+                        x: { min: 0, max: 100, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: 'rgba(255,255,255,0.5)', font: { size: 10 } } },
+                        y: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.8)', font: { size: window.innerWidth < 768 ? 10 : 11, weight: 'bold' } } }
+                    },
+                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: (ctx) => `${ctx.raw}% 開發完成度` } } }
+                }
+            });
+        }
+
+        // ==========================================
+        // 名人/角色匹配資料庫 — 雲端讀取機制
+        // ==========================================
+        function renderCelebMatch(baseMbti, dim5, dim6) {
+            const section = document.getElementById('celeb-match-section');
+            const grid = document.getElementById('celeb-match-grid');
+            
+            // 直接從系統載入的 sysData.celebs 中讀取
+            const celebDatabase = sysData.celebs.base || {};
+            const suffixCelebData = sysData.celebs.suffix || {};
+            const combo64CelebNote = sysData.celebs.combo || {};
+
+            const baseCelebs = celebDatabase[baseMbti] || [];
+            const suffixData = suffixCelebData[dim5 + dim6];
+            const comboKey = baseMbti + '-' + dim5 + dim6;
+            const comboNote = combo64CelebNote[comboKey] || '';
+            
+            if (baseCelebs.length === 0) { section.classList.add('hidden'); return; }
+            section.classList.remove('hidden');
+
+            // 64 型專屬定位句
+            let html = '';
+            if (comboNote) {
+                html += `<div class="col-span-1 md:col-span-2 glass-panel px-4 py-3 rounded-xl border-l-4 border-indigo-400/60 mb-1">
+                    <div class="text-xs text-indigo-300/70 uppercase tracking-widest mb-1">Your 64-Type Identity</div>
+                    <div class="text-sm text-indigo-100 font-medium">${escapeHtml(comboNote)}</div>
+                </div>`;
+            }
+
+            // 基礎 16 型名人（取 3 位顯示）
+            html += `<div class="col-span-1 md:col-span-2 text-[10px] uppercase tracking-widest text-slate-500 mt-1">基礎型匹配 · ${escapeHtml(baseMbti)}</div>`;
+            baseCelebs.slice(0, 3).forEach(c => {
+                html += `<div class="celeb-card">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-medium shrink-0">${escapeHtml(c.cat)}</span>
+                        <div class="text-sm font-bold text-white truncate">${escapeHtml(c.name)}</div>
+                    </div>
+                    <div class="text-xs text-slate-300 font-light leading-relaxed">${escapeHtml(c.desc)}</div>
+                </div>`;
+            });
+
+            // 後綴維度名人
+            if (suffixData) {
+                html += `<div class="col-span-1 md:col-span-2 text-[10px] uppercase tracking-widest text-slate-500 mt-2">擴展維度匹配 · ${escapeHtml(dim5 + dim6)}</div>`;
+                suffixData.celebs.forEach(c => {
+                    html += `<div class="celeb-card" style="border-color: rgba(168,85,247,0.3); background: linear-gradient(135deg, rgba(168,85,247,0.1) 0%, rgba(56,189,248,0.06) 100%);">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-medium shrink-0">${escapeHtml(c.cat)}</span>
+                            <div class="text-sm font-bold text-white truncate">${escapeHtml(c.name)}</div>
+                        </div>
+                        <div class="text-xs text-slate-300 font-light leading-relaxed">${escapeHtml(c.desc)}</div>
+                    </div>`;
+                });
+                html += `<div class="col-span-1 md:col-span-2 text-xs text-purple-300/70 text-center mt-1 italic">${escapeHtml(suffixData.note)}</div>`;
+            }
+
+            // 更多同型名人（折疊展示剩餘 2 位）
+            if (baseCelebs.length > 3) {
+                const remaining = baseCelebs.slice(3);
+                window._currentRemainingCelebs = remaining;
+                html += `<div class="col-span-1 md:col-span-2 mt-1">
+                    <button onclick="
+                        const cont = this.nextElementSibling;
+                        if (!cont.dataset.loaded) {
+                            cont.dataset.loaded = 'true';
+                            cont.innerHTML = '<div class=\\'col-span-full text-center text-xs text-slate-400\\'>載入中...</div>';
+                            setTimeout(() => {
+                                let s = '';
+                                window._currentRemainingCelebs.forEach(c => {
+                                    s += '<div class=\\'celeb-card\\'><div class=\\'flex items-center gap-2 mb-1\\'><span class=\\'text-[10px] px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-medium shrink-0\\'>' + escapeHtml(c.cat) + '</span><div class=\\'text-sm font-bold text-white truncate\\'>' + escapeHtml(c.name) + '</div></div><div class=\\'text-xs text-slate-300 font-light leading-relaxed\\'>' + escapeHtml(c.desc) + '</div></div>';
+                                });
+                                cont.innerHTML = s;
+                            }, 50);
+                        }
+                        cont.classList.toggle('hidden');
+                        this.querySelector('span').textContent = cont.classList.contains('hidden') ? '展開更多同型名人 ▾' : '收合 ▴';
+                    " class="w-full text-xs text-slate-400 hover:text-cyan-300 transition-colors py-1.5 flex items-center justify-center gap-1">
+                        <span>展開更多同型名人 ▾</span>
+                    </button>
+                    <div class="hidden grid grid-cols-1 md:grid-cols-2 gap-3 mt-1"></div>
+                </div>`;
+            }
+
+            grid.innerHTML = html;
+        }
+
+        // ==========================================
+        // 滑動手勢導航（行動端答題）
+        // ==========================================
+        (function() {
+            let touchStartX = 0;
+            let touchStartY = 0;
+            let touchStartTime = 0;
+            
+            document.addEventListener('touchstart', function(e) {
+                if (!DOM.screenQuiz || DOM.screenQuiz.classList.contains('hidden')) return;
+                touchStartX = e.changedTouches[0].screenX;
+                touchStartY = e.changedTouches[0].screenY;
+                touchStartTime = Date.now();
+            }, { passive: true });
+            
+            document.addEventListener('touchend', function(e) {
+                if (!DOM.screenQuiz || DOM.screenQuiz.classList.contains('hidden')) return;
+                if (QuizState.isAnimating) return;
+                
+                const deltaX = e.changedTouches[0].screenX - touchStartX;
+                const deltaY = e.changedTouches[0].screenY - touchStartY;
+                const deltaTime = Date.now() - touchStartTime;
+                
+                // 僅在水平滑動幅度大於垂直，且滑動速度夠快時觸發
+                if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 80 && deltaTime < 400) {
+                    if (deltaX < 0) {
+                        // 左滑：無自動效果（需選擇選項）
+                    } else {
+                        // 右滑：返回上一題
+                        goBack();
+                    }
+                }
+            }, { passive: true });
+        })();
+
+        // ==========================================
+        // 截圖與分享核心邏輯
+        // ==========================================
+        function waitForHtml2Canvas(cb) {
+            if (typeof html2canvas !== 'undefined') { cb(); return; }
+            const check = setInterval(() => { if (typeof html2canvas !== 'undefined') { clearInterval(check); cb(); } }, 100);
+        }
+
+        function generateCanvas(buttonEl, callback, summaryMode) {
+            waitForHtml2Canvas(() => {
+                const captureArea = document.getElementById('capture-area');
+                const originalBtnHtml = buttonEl.innerHTML;
+                buttonEl.innerHTML = "<span>生成中...</span>";
+
+                // 不修改原始 captureArea，避免畫面跳動與排版跑掉
+                const clone = captureArea.cloneNode(true);
+
+                // 建立一個 Wrapper，放在畫面上方且 z-index 在底，避免 left: -99999px 在 iOS/Safari 上的極端位置算圖 Bug
+                const wrapper = document.createElement('div');
+                wrapper.style.position = 'absolute';
+                wrapper.style.top = '0px';
+                wrapper.style.left = '-9999px';
+                wrapper.style.width = captureArea.offsetWidth + 'px';
+                wrapper.style.zIndex = '-9999';
+                wrapper.style.pointerEvents = 'none';
+
+                clone.style.width = '100%';
+                clone.style.height = 'auto';
+                clone.style.maxHeight = 'none';
+                clone.style.overflow = 'visible';
+                clone.style.backgroundColor = '#0f172a';
+                clone.style.margin = '0';
+
+                const hiddenReveals = clone.querySelectorAll('.scroll-reveal');
+                hiddenReveals.forEach(el => {
+                    el.classList.add('revealed');
+                    el.style.opacity = '1';
+                    el.style.transform = 'none';
+                    el.style.transition = 'none';
+                });
+
+                // 展開所有 cloned 的 accordion，確保圖卡有完整內容
+                const clonedBodies = clone.querySelectorAll('.accordion-body');
+                clonedBodies.forEach(body => {
+                    body.classList.remove('hidden');
+                    body.style.animation = 'none';
+                    body.style.maxHeight = 'none';
+                    body.style.opacity = '1';
+                    body.style.display = 'block';
+                });
+
+                const clonedTriggers = clone.querySelectorAll('.accordion-trigger .accordion-chevron');
+                clonedTriggers.forEach(ch => ch.style.display = 'none');
+
+                const celebHiddenGrids = clone.querySelectorAll('#celeb-match-grid .hidden');
+                celebHiddenGrids.forEach(el => {
+                    el.classList.remove('hidden');
+                    el.style.display = 'grid';
+                });
+
+                if (summaryMode) {
+                    const sectionsToRemove = clone.querySelectorAll('.accordion-section');
+                    sectionsToRemove.forEach(el => el.remove());
+
+                    const watermark = document.createElement('div');
+                    watermark.style.cssText = 'text-align:center;padding:16px 0 8px;color:rgba(255,255,255,0.3);font-size:11px;';
+                    watermark.textContent = '完整解析請至測驗頁面查看';
+                    clone.appendChild(watermark);
+                }
+
+                const animatedEls = clone.querySelectorAll('.animate-pulse, .animate-bounce, .pulse-text, .glow-awakened, .glow-stress');
+                animatedEls.forEach(el => { el.classList.remove('animate-pulse', 'animate-bounce', 'pulse-text'); el.style.animation = 'none'; });
+
+                const glassPanels = clone.querySelectorAll('.glass-panel, .glass-card, .glow-awakened, .glow-stress');
+                const blurEffects = clone.querySelectorAll('.blur-\\[100px\\]');
+                const resultCode = clone.querySelector('#result-code');
+
+                if (resultCode) {
+                    resultCode.classList.remove('text-transparent', 'bg-clip-text', 'bg-gradient-to-r', 'from-white', 'to-slate-400');
+                    resultCode.classList.add('text-white');
+                    resultCode.style.color = '#ffffff';
+                }
+                glassPanels.forEach(el => { el.style.backdropFilter = 'none'; el.style.webkitBackdropFilter = 'none'; el.style.background = 'rgba(15, 23, 42, 0.9)'; });
+                blurEffects.forEach(el => el.style.display = 'none');
+
+                const celebToggleBtns = clone.querySelectorAll('#celeb-match-grid button');
+                celebToggleBtns.forEach(b => b.style.display = 'none');
+
+                wrapper.appendChild(clone);
+                document.body.appendChild(wrapper);
+
+                requestAnimationFrame(() => requestAnimationFrame(() => {
+                    const originalCanvases = captureArea.querySelectorAll('canvas');
+                    const clonedCanvases = clone.querySelectorAll('canvas');
+
+                    for (let i = 0; i < originalCanvases.length; i++) {
+                        if (originalCanvases[i] && clonedCanvases[i]) {
+                            clonedCanvases[i].width = originalCanvases[i].width;
+                            clonedCanvases[i].height = originalCanvases[i].height;
+                            clonedCanvases[i].getContext('2d').drawImage(originalCanvases[i], 0, 0);
+                        }
+                    }
+
+                    const targetHeight = Math.max(clone.scrollHeight, clone.offsetHeight);
+
+                    const cleanup = () => {
+                        if (document.body.contains(wrapper)) document.body.removeChild(wrapper);
+                        buttonEl.innerHTML = originalBtnHtml;
+                    };
+
+                    html2canvas(clone, {
+                        scale: Math.min(Math.max(2, window.devicePixelRatio || 2), 3), 
+                        backgroundColor: "#0f172a",
+                        useCORS: true,
+                        logging: false,
+                        width: captureArea.offsetWidth,
+                        height: targetHeight,
+                        windowHeight: targetHeight,
+                        windowWidth: document.documentElement.offsetWidth,
+                        scrollX: 0,
+                        scrollY: -window.scrollY, // 避免 window 滾動導致座標偏移
+                        x: 0,
+                        y: 0,
+                        imageTimeout: 8000
+                    }).then(canvas => {
+                        cleanup();
+                        callback(canvas);
+                    }).catch(err => {
+                        console.error(err);
+                        cleanup();
+                        alert("截圖失敗，請稍後再試或改用分享功能。");
+                    });
+                }));
+            });
+        }
+
+        window.downloadResult = function() { 
+            const target = document.getElementById('capture-area');
+            target.classList.add('export-vertical');
+            generateCanvas(document.getElementById('download-btn'), (canvas) => { 
+                target.classList.remove('export-vertical'); const link = document.createElement('a'); link.download = `MBTI-64-${QuizState.finalUserName}.png`; link.href = canvas.toDataURL(); link.click(); }, false); };
+        
+        window.shareResult = function() {
+            generateCanvas(document.getElementById('share-btn'), (canvas) => {
+                canvas.toBlob(blob => {
+                    const file = new File([blob], `MBTI-64-${QuizState.finalUserName}.png`, { type: "image/png" });
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        navigator.share({ title: '我的 MBTI-64 專屬擴展人格圖鑑', text: '這是我剛測出的深層人格解析，你也來測測看！', files: [file] 
+                        }).catch(err => {
+                            if (err.name === 'NotAllowedError') alert("您的瀏覽器安全機制阻擋了分享。請改用「完整圖卡」下載！");
+                        });
+                    } else { alert("瀏覽器不支援原生分享，請使用「完整圖卡」按鈕。"); }
+                });
+            }, true);
+        };
+
+        // ==========================================
+        // 管理員專屬控制台
+        // ==========================================
+        let adminClickCount = 0;
+        let adminClickTimer;
+
+        window.revealAdmin = function() {
+            adminClickCount++;
+            clearTimeout(adminClickTimer);
+            if (adminClickCount >= 5) {
+                document.getElementById('admin-panel').classList.remove('hidden');
+                
+                
+                setTimeout(() => { DOM.screenStart.scrollTop = DOM.screenStart.scrollHeight; }, 100);
+                adminClickCount = 0; 
+            } else {
+                adminClickTimer = setTimeout(() => { adminClickCount = 0; }, 2000);
+            }
+        };
+
+        window.adminUnlock = function() {
+            const pw = document.getElementById('admin-password').value;
+            const lockEl = document.getElementById('admin-lock');
+            const contentEl = document.getElementById('admin-content');
+            const btn = lockEl.querySelector('button');
+            btn.innerText = '驗證中...'; btn.disabled = true;
+
+            if (typeof google !== 'undefined') {
+                google.script.run
+                    .withSuccessHandler((result) => {
+                        btn.innerText = '解鎖'; btn.disabled = false;
+                        if (result && result.success) {
+                            adminSessionToken = result.token;
+                            window.adminSessionToken = result.token;
+                            // #8c 管理員 Session 持久化：存入 localStorage
+                            try { localStorage.setItem('mbti64_admin_token', result.token); } catch(e) {}
+                            lockEl.classList.add('hidden');
+                            contentEl.classList.remove('hidden'); 
+                        } else if (result && result.locked) {
+                            alert(result.message || '登入已被暫時鎖定，請 30 分鐘後再試。');
+                        } else {
+                            const remaining = result && result.remaining ? result.remaining : '?';
+                            alert(`密碼錯誤（剩餘嘗試次數：${remaining}）`);
+                        }
+                    })
+                    .withFailureHandler((err) => {
+                        btn.innerText = '解鎖'; btn.disabled = false;
+                        alert('驗證失敗: ' + err.message);
+                    })
+                    .adminLogin(pw);
+            } else {
+                btn.innerText = '解鎖'; btn.disabled = false;
+                if (pw === 'localtest') { adminSessionToken = 'local'; window.adminSessionToken = 'local'; lockEl.classList.add('hidden'); contentEl.classList.remove('hidden'); }
+                else { alert('密碼錯誤（本機測試密碼為 localtest）'); }
+            }
+        };
+
+        let adminStatsCache = null;
+        // 保存原始 admin-content 內容，供進階分析工具返回時還原
+        window._adminContentBackup = null;
+        window.backupAdminContent = function() {
+            const el = document.getElementById('admin-content');
+            if (el && !window._adminContentBackup) {
+                window._adminContentBackup = el.innerHTML;
+            }
+        };
+        window.restoreAdminContent = function() {
+            const el = document.getElementById('admin-content');
+            if (el && window._adminContentBackup) {
+                el.innerHTML = window._adminContentBackup;
+                window._adminContentBackup = null;
+            }
+        };
+        window.adminFetchStats = function() {
+            const btn = document.getElementById('btn-fetch-stats');
+            btn.innerText = '載入中...'; btn.disabled = true;
+            const renderStats = (stats) => {
+                btn.innerText = '重新載入'; btn.disabled = false;
+                adminStatsCache = stats;
+                window.currentAdminStats = stats;
+                const el = document.getElementById('admin-stats');
+                el.classList.remove('hidden');
+                if (!stats || stats.total === 0) { el.innerHTML = '<p class="text-center text-slate-400">尚無數據</p>'; document.getElementById('admin-charts').classList.add('hidden'); return; }
+                
+                const sorted = Object.entries(stats.types || {}).sort((a,b) => b[1] - a[1]);
+                const top5 = sorted.slice(0, 5).map(([k,v]) => `<span class="text-cyan-300">${escapeHtml(k)}</span>: ${v}`).join('　');
+                
+                const dim5Total = (stats.dim5?.A||0) + (stats.dim5?.O||0);
+                const dim6Total = (stats.dim6?.H||0) + (stats.dim6?.C||0);
+                const aP = dim5Total ? Math.round((stats.dim5?.A||0)/dim5Total*100) : 0;
+                const hP = dim6Total ? Math.round((stats.dim6?.H||0)/dim6Total*100) : 0;
+
+                el.innerHTML = `
+                    <div class="font-bold text-cyan-300 mb-1">📊 總填答人數：<span class="text-white text-lg">${stats.total}</span></div>
+                    <div>🏆 前五名類型：${top5}</div>
+                    <div>⚡ 第五維度：果斷 ${aP}% / 審慎 ${100-aP}%</div>
+                    <div>💎 第六維度：溫暖 ${hP}% / 理性 ${100-hP}%</div>
+                    <div class="border-t border-slate-600 pt-2 mt-2">📈 近期趨勢：${Object.entries(stats.recentDays||{}).slice(-7).map(([d,n])=>`${escapeHtml(d)}(${n})`).join(' → ') || '無數據'}</div>
+                `;
+
+                document.getElementById('admin-charts').classList.remove('hidden');
+                renderAdminCharts(stats);
+            };
+            if (typeof google !== 'undefined') {
+                google.script.run.withSuccessHandler(renderStats).withFailureHandler(() => { btn.innerText = '載入失敗'; btn.disabled = false; }).fetchStats(adminSessionToken);
+            } else {
+                setTimeout(() => renderStats({ total: 0 }), 500);
+            }
+        };
+
+        let adminPieChart = null;
+        let adminTrendChart = null;
+
+        function renderAdminCharts(stats) {
+            function waitForChart(cb) {
+                if (typeof Chart !== 'undefined') { cb(); return; }
+                const check = setInterval(() => { if (typeof Chart !== 'undefined') { clearInterval(check); cb(); } }, 100);
+            }
+            waitForChart(() => {
+                const sorted = Object.entries(stats.types || {}).sort((a,b) => b[1] - a[1]);
+                const pieLabels = sorted.map(([k]) => k);
+                const pieData = sorted.map(([,v]) => v);
+                const pieColors = pieLabels.map((_, i) => `hsl(${(i * 22.5) % 360}, 70%, 60%)`);
+
+                if (adminPieChart) adminPieChart.destroy();
+                const pieCtx = document.getElementById('adminTypePieChart').getContext('2d');
+                adminPieChart = new Chart(pieCtx, {
+                    type: 'doughnut',
+                    data: { labels: pieLabels, datasets: [{ data: pieData, backgroundColor: pieColors, borderWidth: 0 }] },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'right', labels: { color: '#cbd5e1', font: { size: 10 }, boxWidth: 12, padding: 6 } },
+                            title: { display: true, text: '16 型分佈', color: '#94a3b8', font: { size: 11 } }
+                        }
+                    }
+                });
+
+                const recentEntries = Object.entries(stats.recentDays || {}).slice(-14);
+                const trendLabels = recentEntries.map(([d]) => d);
+                const trendData = recentEntries.map(([,n]) => n);
+
+                if (adminTrendChart) adminTrendChart.destroy();
+                const trendCtx = document.getElementById('adminTrendChart').getContext('2d');
+                adminTrendChart = new Chart(trendCtx, {
+                    type: 'line',
+                    data: {
+                        labels: trendLabels,
+                        datasets: [{
+                            label: '填答數',
+                            data: trendData,
+                            borderColor: 'rgba(56, 189, 248, 0.8)',
+                            backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#38bdf8',
+                            pointRadius: 3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: { ticks: { color: '#64748b', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.03)' } },
+                            y: { beginAtZero: true, ticks: { color: '#64748b', font: { size: 9 }, stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            title: { display: true, text: '近 14 日填答趨勢', color: '#94a3b8', font: { size: 11 } }
+                        }
+                    }
+                });
+            });
+        }
+
+        window.adminExportCSV = function() {
+            if (!window.adminRecordsCache || window.adminRecordsCache.length === 0) {
+                alert('請先載入使用者紀錄後再匯出。');
+                return;
+            }
+            const records = window.adminRecordsCache;
+            const headers = ['日期','姓名','MBTI','決策模式','待人態度','E','I','S','N','T','F','J','P','A','O','H','C'];
+            const csvRows = [headers.join(',')];
+            records.forEach(r => {
+                const s = r.scores || {};
+                const row = [
+                    '"' + (r.date||'').replace(/"/g,'""') + '"',
+                    '"' + (r.name||'匿名').replace(/"/g,'""') + '"',
+                    r.mbti||'', r.dim5||'', r.dim6||'',
+                    s.E||0, s.I||0, s.S||0, s.N||0, s.T||0, s.F||0,
+                    s.J||0, s.P||0, s.A||0, s.O||0, s.H||0, s.C||0
+                ];
+                csvRows.push(row.join(','));
+            });
+            const bom = '\uFEFF';
+            const blob = new Blob([bom + csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `MBTI64_紀錄_${new Date().toISOString().slice(0,10)}.csv`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        };
+
+        window.adminForceSync = function() {
+            if (!confirm('⚠️ 這將覆蓋試算表中的「題庫」「16型解析」「後綴擴展」「名人資料庫」「64型定位」五個分頁。\n測驗紀錄不受影響。\n\n確定要繼續嗎？')) return;
+            if (!confirm('⚠️ 再次確認：此操作不可復原。是否真的要執行強制同步？')) return;
+            
+            const btn = document.getElementById('btn-force-sync');
+            btn.innerText = '同步中...'; btn.disabled = true;
+            
+            const payload = {
+                questions: typeof questions !== 'undefined' ? questions : sysData.questions,
+                mbtiBase: typeof mbtiBase !== 'undefined' ? mbtiBase : sysData.mbtiBase,
+                suffixModifiers: typeof suffixModifiers !== 'undefined' ? suffixModifiers : sysData.suffixModifiers,
+                celebDatabase: typeof window.celebDatabase !== 'undefined' ? window.celebDatabase : sysData.celebs.base,
+                suffixCelebData: typeof window.suffixCelebData !== 'undefined' ? window.suffixCelebData : sysData.celebs.suffix,
+                combo64CelebNote: typeof window.combo64CelebNote !== 'undefined' ? window.combo64CelebNote : sysData.celebs.combo
+            };
+            
+            if (typeof google !== 'undefined') {
+                google.script.run.withSuccessHandler((res) => {
+                    btn.innerText = res.success ? '✅ 同步完成' : '❌ 同步失敗';
+                    btn.disabled = false;
+                    if (res.message) alert(res.message);
+                }).withFailureHandler((err) => {
+                    btn.innerText = '❌ 同步失敗'; btn.disabled = false;
+                    alert('錯誤: ' + err.message);
+                }).forceSyncData(payload, adminSessionToken);
+            } else {
+                setTimeout(() => { btn.innerText = '（僅限線上環境）'; btn.disabled = false; }, 500);
+            }
+        };
+
+        window.adminGenerateCard = function() {
+            const mbti = document.getElementById('admin-mbti').value;
+            const dim5Val = document.getElementById('admin-dim5').value;
+            const dim6Val = document.getElementById('admin-dim6').value;
+            const fullCode = `${mbti}-${dim5Val}${dim6Val}`;
+            
+            const nameInput = document.getElementById('user-name-input').value.trim();
+            QuizState.finalUserName = nameInput !== "" ? nameInput : "管理員預覽";
+            QuizState.scores = { E:30,I:30,S:30,N:30,T:30,F:30,J:30,P:30,A:30,O:30,H:30,C:30 };
+            QuizState.counts = { E:8,I:2,S:5,N:5,T:5,F:5,J:5,P:5,A:5,O:5,H:5,C:5 };
+            
+            for (let i = 0; i < fullCode.length; i++) {
+                const char = fullCode[i];
+                if (QuizState.scores[char] !== undefined) {
+                    QuizState.scores[char] = 80;
+                    QuizState.counts[char] = 8;
+                }
+            }
+            const pairs = [['E','I'],['S','N'],['T','F'],['J','P'],['A','O'],['H','C']];
+            pairs.forEach(([a,b]) => {
+                if (QuizState.scores[a] > QuizState.scores[b]) QuizState.counts[b] = 2;
+                else if (QuizState.scores[b] > QuizState.scores[a]) QuizState.counts[a] = 2;
+            });
+
+            DOM.screenStart.classList.add('hidden');
+            document.getElementById('admin-panel').classList.add('hidden');
+            showResultScreen(fullCode, dim5Val, dim6Val, mbti);
+        };
+
+        window.adminFetchUsers = function() {
+            const btn = document.getElementById('btn-fetch-users');
+            btn.innerText = "正在從雲端載入...";
+            btn.disabled = true;
+
+            if (typeof google !== 'undefined') {
+                google.script.run.withSuccessHandler((records) => {
+                    btn.innerHTML = `<svg class="w-3 h-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> 重新載入`;
+                    btn.disabled = false;
+                    renderAdminUsers(records);
+                }).withFailureHandler((err) => {
+                    btn.innerText = "載入失敗";
+                    btn.disabled = false;
+                    alert("載入失敗: " + err.message);
+                }).fetchAllRecords(adminSessionToken);
+            } else {
+                setTimeout(() => {
+                    btn.innerText = "重新載入 (本機模擬)";
+                    btn.disabled = false;
+                    const history = JSON.parse(safeLocalGet('mbti64_history') || '[]');
+                    renderAdminUsers(history.map(h => ({
+                        date: h.date, name: h.name, mbti: h.baseMbti, dim5: h.dim5, dim6: h.dim6, scores: h.scores
+                    })));
+                }, 800);
+            }
+        };
+
+        function renderAdminUsers(records) {
+            const list = document.getElementById('admin-users-list');
+            if (!records || records.length === 0) {
+                list.innerHTML = '<div class="text-xs text-slate-400 text-center py-4 bg-slate-900/50 rounded border border-slate-700">目前雲端資料庫中沒有任何紀錄。</div>';
+                return;
+            }
+            
+            window.adminRecordsCache = records;
+            
+            let html = '';
+            records.forEach((r, idx) => {
+                let dateStr = r.date;
+                try { 
+                    const d = new Date(r.date); 
+                    if(!isNaN(d)) dateStr = d.toLocaleDateString('zh-TW') + ' ' + d.toLocaleTimeString('zh-TW', {hour: '2-digit', minute:'2-digit'});
+                } catch(e) {}
+                
+                const safeName = escapeHtml(r.name !== '匿名' && r.name ? r.name : '匿名訪客');
+                const safeMbti = escapeHtml(r.mbti);
+                const safeDim5 = escapeHtml(r.dim5);
+                const safeDim6 = escapeHtml(r.dim6);
+
+                html += `
+                <div class="flex justify-between items-center bg-slate-800/80 p-3 rounded border border-slate-600/50 hover:border-cyan-500/50 transition-colors">
+                    <div>
+                        <div class="text-sm text-cyan-300 font-bold mb-0.5">${safeName}</div>
+                        <div class="text-[10px] text-slate-400 font-mono tracking-wider">${escapeHtml(dateStr)} | ${safeMbti}-${safeDim5}${safeDim6}</div>
+                    </div>
+                    <button onclick="adminGenerateFromRecord(${idx})" class="text-xs bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white px-3 py-1.5 rounded-lg shadow font-medium">
+                        看圖卡
+                    </button>
+                </div>`;
+            });
+            list.innerHTML = html;
+        }
+
+        window.adminGenerateFromRecord = function(idx) {
+            const r = window.adminRecordsCache[idx];
+            if (!r) return;
+            
+            QuizState.finalUserName = r.name || "匿名";
+            QuizState.scores = r.scores;
+            QuizState.counts = r.counts || {}; 
+            const fullCode = `${r.mbti}-${r.dim5}${r.dim6}`;
+            
+            DOM.screenStart.classList.add('hidden');
+            document.getElementById('admin-panel').classList.add('hidden');
+            showResultScreen(fullCode, r.dim5, r.dim6, r.mbti);
+        };
+
+        // ==========================================
+        // #8c 管理員 Session 自動恢復
+        // ==========================================
+        (function _tryRecoverAdminSession() {
+            try {
+                const savedToken = localStorage.getItem('mbti64_admin_token');
+                if (!savedToken || typeof google === 'undefined') return;
+                google.script.run
+                    .withSuccessHandler(function(result) {
+                        if (result && result.valid) {
+                            adminSessionToken = savedToken;
+                            window.adminSessionToken = savedToken;
+                            // 不自動展開面板，但在用戶點擊管理面板時可直接進入
+                        } else {
+                            localStorage.removeItem('mbti64_admin_token');
+                        }
+                    })
+                    .withFailureHandler(function() {
+                        localStorage.removeItem('mbti64_admin_token');
+                    })
+                    .verifyAdminSession(savedToken);
+            } catch(e) {}
+        })();
+
+        // ==========================================
+        // #2b beforeunload 退出保護
+        // ==========================================
+        window.addEventListener('beforeunload', function(e) {
+            if (QuizState.currentStep > 0 && QuizState.currentStep < (QuizState.shuffledQuestions || []).length) {
+                e.preventDefault();
+                e.returnValue = '你正在答題中，離開將丟失進度。確定要離開嗎？';
+                return e.returnValue;
+            }
+        });
+
+        // ==========================================
+        // #1 lazy loading: 答題開始後即預載結果資料
+        // ==========================================
+        EventBus.on('quiz-started', function() {
+            if (typeof ensureResultData === 'function') ensureResultData();
+        });
+
+        // ==========================================
+        // #2c 動態難度標記：在題目顯示時標記
+        // ==========================================
+        EventBus.on('question-rendered', function(data) {
+            if (!data || !data.question) return;
+            const diffLabel = document.getElementById('question-difficulty');
+            if (!diffLabel) return;
+            const dim = data.question.dim || '';
+            if (dim === 'a_o' || dim === 'h_c') {
+                diffLabel.textContent = '進階維度';
+                diffLabel.className = 'text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30';
+            } else {
+                diffLabel.textContent = '基礎維度';
+                diffLabel.className = 'text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30';
+            }
+        });
+
+        // ==========================================
+        // 雙人羈絆邀請系統 (Couples Invite) 初始化
+        // ==========================================
+        window.partnerInviteData = null;
+        (function _checkPartnerInvite() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const partnerCode = urlParams.get('partnerCode');
+                const partnerName = urlParams.get('partnerName');
+                if (partnerCode) {
+                    window.partnerInviteData = { code: partnerCode, name: partnerName || '你的伴侶/好友' };
+                    
+                    const startScreen = document.getElementById('screen-start');
+                    if (startScreen) {
+                        const banner = document.createElement('div');
+                        banner.className = 'w-full max-w-sm mx-auto mb-6 fade-in-up';
+                        banner.innerHTML = \`
+                            <div class="glass-panel p-4 rounded-2xl border border-pink-500/30" style="background: linear-gradient(135deg, rgba(236,72,153,0.1) 0%, rgba(15,23,42,0.8) 100%);">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-3xl animate-bounce">💌</span>
+                                    <div class="text-left">
+                                        <div class="text-sm font-bold text-pink-300">來自 \${escapeHtml(window.partnerInviteData.name)} 的邀請！</div>
+                                        <div class="text-xs text-slate-300 mt-0.5">測出你的真實人格，看看你們的靈魂契合度吧！</div>
+                                    </div>
+                                </div>
+                            </div>
+                        \`;
+                        startScreen.insertBefore(banner, startScreen.children[1]);
+                    }
+                }
+            } catch(e) {}
+        })();
+        
+        window.invitePartner = function() {
+            const url = new URL(window.location.href);
+            url.searchParams.set('partnerCode', QuizState.finalCode);
+            url.searchParams.set('partnerName', QuizState.finalUserName || '匿名');
+            
+            const dummy = document.createElement('input');
+            document.body.appendChild(dummy);
+            dummy.value = url.toString();
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+            
+            if (typeof showToast === 'function') {
+                showToast('💌 邀請連結已複製！快傳給另一半或好友吧。', 'success');
+            } else {
+                alert('邀請連結已複製！快傳給另一半或好友吧。');
+            }
+        };
+
+        // 監聽結果頁顯示，若有 partnerData 則插入「馬上看契合度」按鈕
+        EventBus.on('quiz-started', function() {
+            // override _renderResultScreen behavior temporarily to inject button if needed
+        });
+        
+        // 為了避免覆寫整段 _renderResultScreen，我們用 setInterval 監測
+        const _partnerCheckInterval = setInterval(() => {
+            if (window.partnerInviteData && QuizState.finalCode && document.getElementById('result-code') && document.getElementById('result-code').innerText === QuizState.finalCode) {
+                const actionContainer = document.querySelector('#download-btn')?.parentElement;
+                if (actionContainer && !document.getElementById('compat-quick-match-btn')) {
+                    const matchBtn = document.createElement('button');
+                    matchBtn.id = 'compat-quick-match-btn';
+                    matchBtn.className = 'w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-bold py-4 px-6 rounded-2xl hover:from-pink-400 hover:to-rose-400 transition-all duration-300 shadow-[0_0_20px_rgba(236,72,153,0.3)] hover:shadow-[0_0_30px_rgba(236,72,153,0.5)] text-lg mb-4 mt-2 animate-pulse';
+                    matchBtn.innerHTML = \`💘 馬上看與 \${escapeHtml(window.partnerInviteData.name)} 的契合度報告！\`;
+                    matchBtn.onclick = function() {
+                        if (window.CompatibilityModule) {
+                            CompatibilityModule.renderCompatScreen();
+                            setTimeout(() => {
+                                const selfInput = document.getElementById('compat-self-code');
+                                const partnerInput = document.getElementById('compat-partner-code');
+                                if (selfInput && partnerInput) {
+                                    selfInput.value = QuizState.finalCode;
+                                    partnerInput.value = window.partnerInviteData.code;
+                                    if (window.CompatibilityModule.calculateMatch) {
+                                        window.CompatibilityModule.calculateMatch();
+                                    }
+                                }
+                            }, 300);
+                        } else {
+                            alert('配對模組載入中，請稍候...');
+                        }
+                    };
+                    actionContainer.parentNode.insertBefore(matchBtn, actionContainer);
+                    clearInterval(_partnerCheckInterval);
+                }
+            }
+        }, 1000);
+
+    })(); // end IIFE
+    </script>
+</body>
+</html>

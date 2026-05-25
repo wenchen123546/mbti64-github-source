@@ -1,0 +1,16 @@
+{
+  "name": "MBTI-64 擴展人格測驗",
+  "short_name": "MBTI-64",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#080e1a",
+  "theme_color": "#22d3ee",
+  "description": "解鎖 64 種深層人格面貌與專屬發展法則。",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ]
+}
