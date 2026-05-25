@@ -845,4 +845,27 @@
     window.normalizeCode = MBTI64Utils.normalizeCode.bind(MBTI64Utils);
     window.displayCode   = MBTI64Utils.displayCode.bind(MBTI64Utils);
 
+
+    window.MBTI64Utils = MBTI64Utils;
+    window.escapeHtml = MBTI64Utils.escapeHtml;
+    window.fisherYatesShuffle = MBTI64Utils.fisherYatesShuffle;
+    window.createFreshScores = MBTI64Utils.createFreshScores;
+    window.createFreshState = MBTI64Utils.createFreshState;
+    window.textToHtml = MBTI64Utils.textToHtml;
+    window.safeLocalSet = MBTI64Utils.safeLocalSet;
+    window.safeLocalGet = MBTI64Utils.safeLocalGet;
+    window.safeLocalGetJSON = MBTI64Utils.safeLocalGetJSON;
+    window.safeLocalRemove = MBTI64Utils.safeLocalRemove;
+    window.normalizeCode = MBTI64Utils.normalizeCode;
+    window.displayCode = MBTI64Utils.displayCode;
+    window.formatDate = MBTI64Utils.formatDate;
+    window.showToast = MBTI64Utils.showToast;
+    window.showError = MBTI64Utils.showError;
+    window.gasRun = MBTI64Utils.gasRun;
+    window.gasCall = MBTI64Utils.gasCall;
+    window.generateUID = MBTI64Utils.generateUID;
+    window.calculatePercentage = MBTI64Utils.calculatePercentage;
+    window.ThemeManager = ThemeManager;
+    window.ErrorHandler = ErrorHandler;
+
 })();

@@ -923,3 +923,9 @@ const mbtiBase = {
         functions: { dom: "Se 外向實感", aux: "Fi 內向情感", ter: "Te 外向思考", inf: "Ni 內向直覺" }
     }
 };
+
+if (typeof window !== "undefined") {
+  window.mbtiTypes = typeof mbtiTypes !== "undefined" ? mbtiTypes : null;
+  window.typeRelations = typeof typeRelations !== "undefined" ? typeRelations : null;
+  window.traitDescriptions = typeof traitDescriptions !== "undefined" ? traitDescriptions : null;
+}

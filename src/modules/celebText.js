@@ -216,3 +216,7 @@ window.combo64CelebNote = {
     'ESFP-OH': '你是「最溫暖的那道光」——在歡笑中敏銳察覺誰需要陪伴。',
     'ESFP-OC': '你是「擁有隱藏深度的陽光少年」——沒人知道你回家後的沉思。'
 };
+
+if (typeof window !== "undefined") {
+  window.celebDatabase = typeof celebDatabase !== "undefined" ? celebDatabase : null;
+}

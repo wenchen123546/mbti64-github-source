@@ -1259,3 +1259,8 @@ const questions = [
         ]
     }
 ];
+
+if (typeof window !== "undefined") {
+  window.questions = questions;
+  window.sysData = { questions: questions };
+}
