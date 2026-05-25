@@ -923,7 +923,7 @@
         // ==========================================
         // 核心架構
         // ==========================================
-        const needsInit = <?= needsInit ?>;
+        const needsInit = false;
         // #4 修復：集中定義常數，避免三處重複定義 12 導致維護風險
         const QUESTIONS_PER_DIM = 12;
         // 引入 celebs 物件來存放名人資料
@@ -1002,10 +1002,10 @@
                 }
             } else {
                 // 從 GAS 後端抓取雲端快取的資料
-                sysData.questions = <?!= questionsData ?>;
-                sysData.mbtiBase = <?!= databaseData ?>;
-                sysData.suffixModifiers = <?!= modifiersData ?>;
-                sysData.celebs = <?!= celebsData ?>; // 接收名人與 64型定位資料
+                sysData.questions = typeof window.questions !== "undefined" ? window.questions : [];
+                sysData.mbtiBase = typeof window.mbtiTypes !== "undefined" ? window.mbtiTypes : {};
+                sysData.suffixModifiers = typeof window.suffixModifiers !== "undefined" ? window.suffixModifiers : {};
+                sysData.celebs = typeof window.celebDatabase !== "undefined" ? { base: window.celebDatabase, suffix: window.suffixCelebData || {}, combo: window.combo64CelebNote || {} } : {base:{}, suffix:{}, combo:{}}; // 接收名人與 64型定位資料
             }
 
             if (!sysData.questions || sysData.questions.length === 0) {
@@ -1025,6 +1025,15 @@
                     } else { localStorage.removeItem('mbti64_progress'); }
                 } catch (e) { localStorage.removeItem('mbti64_progress'); }
             }
+
+            // 強制確保開始按鈕可用
+            setTimeout(() => {
+                if (DOM.startBtn) {
+                    DOM.startBtn.innerText = "開始測驗";
+                    DOM.startBtn.disabled = false;
+                    DOM.startBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+                }
+            }, 500);
         });
 
         let lastKeyTime = 0;
