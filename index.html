@@ -38,6 +38,8 @@
             background: #0f172a;
         }
     </style>
+  <script type="module" crossorigin src="./assets/index-Dth4Hlrv.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-yVyjwvz_.css">
 </head>
 <body class="min-h-screen flex items-start md:items-center justify-center p-4 md:p-6 text-slate-200 overflow-y-auto" data-theme="dark">
     <!-- #10 a11y: 跳轉至主內容 -->
@@ -1480,7 +1482,7 @@
 
             // #2b 答題中途退出保護：若正在答題中，二次確認
             if (QuizState.currentStep > 0 && QuizState.currentStep < (QuizState.shuffledQuestions || []).length) {
-                if (!confirm('⚠️ 你正在答題中，返回首頁將清除所有進度。\n\n確定要離開嗎？')) return;
+                if (!confirm('⚠️ 你正在答題中，返回首頁將清除所有進度。確定要離開嗎？')) return;
             }
             
             clearProgress();
@@ -2799,17 +2801,17 @@
                     if (startScreen) {
                         const banner = document.createElement('div');
                         banner.className = 'w-full max-w-sm mx-auto mb-6 fade-in-up';
-                        banner.innerHTML = \`
+                        banner.innerHTML = `
                             <div class="glass-panel p-4 rounded-2xl border border-pink-500/30" style="background: linear-gradient(135deg, rgba(236,72,153,0.1) 0%, rgba(15,23,42,0.8) 100%);">
                                 <div class="flex items-center gap-3">
                                     <span class="text-3xl animate-bounce">💌</span>
                                     <div class="text-left">
-                                        <div class="text-sm font-bold text-pink-300">來自 \${escapeHtml(window.partnerInviteData.name)} 的邀請！</div>
+                                        <div class="text-sm font-bold text-pink-300">來自 ${escapeHtml(window.partnerInviteData.name)} 的邀請！</div>
                                         <div class="text-xs text-slate-300 mt-0.5">測出你的真實人格，看看你們的靈魂契合度吧！</div>
                                     </div>
                                 </div>
                             </div>
-                        \`;
+                        `;
                         startScreen.insertBefore(banner, startScreen.children[1]);
                     }
                 }
@@ -2848,7 +2850,7 @@
                     const matchBtn = document.createElement('button');
                     matchBtn.id = 'compat-quick-match-btn';
                     matchBtn.className = 'w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-bold py-4 px-6 rounded-2xl hover:from-pink-400 hover:to-rose-400 transition-all duration-300 shadow-[0_0_20px_rgba(236,72,153,0.3)] hover:shadow-[0_0_30px_rgba(236,72,153,0.5)] text-lg mb-4 mt-2 animate-pulse';
-                    matchBtn.innerHTML = \`💘 馬上看與 \${escapeHtml(window.partnerInviteData.name)} 的契合度報告！\`;
+                    matchBtn.innerHTML = `💘 馬上看與 ${escapeHtml(window.partnerInviteData.name)} 的契合度報告！`;
                     matchBtn.onclick = function() {
                         if (window.CompatibilityModule) {
                             CompatibilityModule.renderCompatScreen();
@@ -2875,6 +2877,5 @@
 
     })(); // end IIFE
     </script>
-  <script type="module" src="/src/main.js"></script>
 </body>
 </html>
