@@ -932,7 +932,7 @@
         const sysData = { questions: [], mbtiBase: {}, suffixModifiers: {}, celebs: {base:{}, suffix:{}, combo:{}} };
         const DOM = {};
         let questionStartTime = 0;
-        let QuizState = createFreshState();
+        let QuizState = { currentStep: 0, shuffledQuestions: [] };
         // [修復4] 將 QuizState 掛到 window，供 ExplorerModule / QuickQuizModule 等外部模組讀取
         window.QuizState = QuizState;
         let loadingInterval;
@@ -1171,65 +1171,125 @@
         // ==========================================
         window.resumeQuiz = function() {
             try {
-                const parsed = JSON.parse(safeLocalGet('mbti64_progress'));
+                if (!DOM.startBtn) {
+                    DOM.startBtn = document.getElementById('start-btn');
+                    DOM.resumeBtn = document.getElementById('resume-btn');
+                    DOM.screenStart = document.getElementById('screen-start');
+                    DOM.screenQuiz = document.getElementById('screen-quiz');
+                    DOM.screenLoading = document.getElementById('screen-loading');
+                    DOM.screenResult = document.getElementById('screen-result');
+                    DOM.questionCounter = document.getElementById('question-counter');
+                    DOM.questionText = document.getElementById('question-text');
+                    DOM.btnBack = document.getElementById('btn-back');
+                    DOM.progressBar = document.getElementById('progress-bar');
+                    DOM.optionsContainer = document.getElementById('options-container');
+                }
+                
+                const parsed = JSON.parse(typeof safeLocalGet === 'function' ? safeLocalGet('mbti64_progress') : localStorage.getItem('mbti64_progress'));
                 if (parsed && parsed._version === QUIZ_VERSION && parsed.shuffledQuestions && parsed.shuffledQuestions.length > 0) {
                     QuizState = parsed;
-                    window.QuizState = QuizState; // [修復4] 同步到 window
-                    if(!QuizState.times) QuizState.times = createFreshScores();
-                    if(!QuizState.counts) QuizState.counts = createFreshScores();
+                    window.QuizState = QuizState;
+                    if(!QuizState.times) QuizState.times = typeof createFreshScores === 'function' ? createFreshScores() : {E:0,I:0,S:0,N:0,T:0,F:0,J:0,P:0,A:0,O:0,H:0,C:0};
+                    if(!QuizState.counts) QuizState.counts = typeof createFreshScores === 'function' ? createFreshScores() : {E:0,I:0,S:0,N:0,T:0,F:0,J:0,P:0,A:0,O:0,H:0,C:0};
                     DOM.screenStart.classList.add('hidden');
                     DOM.screenQuiz.classList.remove('hidden');
                     DOM.screenQuiz.classList.add('flex', 'fade-in-up');
-                    updateDimIndicators();  // #9 從已存進度重建計數器
-                    renderQuestion();
+                    if (typeof updateDimIndicators === 'function') updateDimIndicators();
+                    if (typeof renderQuestion === 'function') renderQuestion();
                 } else throw new Error("存檔無效");
-            } catch(e) { clearProgress(); startQuiz(); }
+            } catch(e) { 
+                console.error("resumeQuiz Error:", e);
+                if (typeof clearProgress === 'function') clearProgress(); 
+                if (typeof startQuiz === 'function') startQuiz(); 
+            }
+    
         };
 
         window.startQuiz = function() {
-            DOM.startBtn.disabled = true;
-            DOM.startBtn.innerText = "測驗生成中...";
-            DOM.startBtn.classList.add('opacity-70', 'cursor-not-allowed');
-            DOM.resumeBtn.classList.add('hidden');
-
-            const nameInput = document.getElementById('user-name-input').value.trim();
-            QuizState = createFreshState();
-            window.QuizState = QuizState; // [修復4] 同步到 window
-            QuizState.finalUserName = nameInput !== "" ? nameInput : "匿名";
-
-            const grouped = {};
-            sysData.questions.forEach(q => {
-                if(!grouped[q.dimension]) grouped[q.dimension] = [];
-                grouped[q.dimension].push(q);
-            });
-            // #4 修復：使用頂層統一常數 QUESTIONS_PER_DIM，不再重複定義
-            Object.keys(grouped).forEach(key => {
-                grouped[key] = fisherYatesShuffle(grouped[key]).slice(0, QUESTIONS_PER_DIM);
-            });
-            
-            const dimKeys = fisherYatesShuffle(Object.keys(grouped));
-
-            QuizState.shuffledQuestions = [];
-            let hasMore = true;
-            while(hasMore) {
-                hasMore = false;
-                dimKeys.forEach(key => {
-                    if(grouped[key].length > 0) { 
-                        const q = grouped[key].shift();
-                        q.options = fisherYatesShuffle(q.options);
-                        QuizState.shuffledQuestions.push(q); 
-                        hasMore = true; 
+            try {
+                if (!DOM.startBtn) {
+                    DOM.startBtn = document.getElementById('start-btn');
+                    DOM.resumeBtn = document.getElementById('resume-btn');
+                    DOM.screenStart = document.getElementById('screen-start');
+                    DOM.screenQuiz = document.getElementById('screen-quiz');
+                    DOM.screenLoading = document.getElementById('screen-loading');
+                    DOM.screenResult = document.getElementById('screen-result');
+                    DOM.questionCounter = document.getElementById('question-counter');
+                    DOM.questionText = document.getElementById('question-text');
+                    DOM.btnBack = document.getElementById('btn-back');
+                    DOM.progressBar = document.getElementById('progress-bar');
+                    DOM.optionsContainer = document.getElementById('options-container');
+                }
+                
+                // 安全防護：如果 sysData 為空，嘗試重新抓取
+                if (!sysData.questions || sysData.questions.length === 0) {
+                    if (typeof window.questions !== 'undefined' && window.questions.length > 0) {
+                        sysData.questions = window.questions;
+                        sysData.mbtiBase = window.mbtiTypes || {};
+                        sysData.suffixModifiers = window.suffixModifiers || {};
+                        sysData.celebs = window.celebDatabase ? { base: window.celebDatabase, suffix: window.suffixCelebData || {}, combo: window.combo64CelebNote || {} } : {base:{}, suffix:{}, combo:{}};
+                    } else {
+                        alert("⚠️ 系統模組尚未完全載入，請稍候幾秒鐘再試，或重新整理網頁！");
+                        return;
                     }
-                });
-            }
+                }
+                
+                DOM.startBtn.disabled = true;
+                DOM.startBtn.innerText = "測驗生成中...";
+                DOM.startBtn.classList.add('opacity-70', 'cursor-not-allowed');
+                if (DOM.resumeBtn) DOM.resumeBtn.classList.add('hidden');
 
-            saveProgress();
-            DOM.screenStart.classList.add('hidden');
-            DOM.screenQuiz.classList.remove('hidden');
-            DOM.screenQuiz.classList.add('flex', 'fade-in-up');
-            updateDimIndicators();  // #9 初始化維度指示器（全量，僅此一次）
-            renderQuestion();
-            // #1 / #12：通知 EventBus 測驗已啟動，觸發 lazy loading
+                const nameInputEl = document.getElementById('user-name-input');
+                const nameInput = nameInputEl ? nameInputEl.value.trim() : "";
+                
+                QuizState = typeof window.createFreshState === 'function' ? window.createFreshState() : (typeof createFreshState === 'function' ? createFreshState() : { currentStep: 0, shuffledQuestions: [], scores: {E:0,I:0,S:0,N:0,T:0,F:0,J:0,P:0,A:0,O:0,H:0,C:0}, history: [], times: {}, counts: {} });
+                window.QuizState = QuizState; // [修復4] 同步到 window
+                QuizState.finalUserName = nameInput !== "" ? nameInput : "匿名";
+
+                const grouped = {};
+                sysData.questions.forEach(q => {
+                    if(!grouped[q.dimension]) grouped[q.dimension] = [];
+                    grouped[q.dimension].push(q);
+                });
+                
+                Object.keys(grouped).forEach(key => {
+                    grouped[key] = fisherYatesShuffle(grouped[key]).slice(0, QUESTIONS_PER_DIM);
+                });
+                
+                const dimKeys = fisherYatesShuffle(Object.keys(grouped));
+
+                QuizState.shuffledQuestions = [];
+                let hasMore = true;
+                while(hasMore) {
+                    hasMore = false;
+                    dimKeys.forEach(key => {
+                        if(grouped[key].length > 0) { 
+                            const q = grouped[key].shift();
+                            q.options = fisherYatesShuffle(q.options);
+                            QuizState.shuffledQuestions.push(q); 
+                            hasMore = true; 
+                        }
+                    });
+                }
+                
+                if (QuizState.shuffledQuestions.length === 0) {
+                    alert("⚠️ 發生異常：題庫篩選後為空，請重新整理網頁再試！");
+                    return;
+                }
+
+                if (typeof saveProgress === 'function') saveProgress();
+                DOM.screenStart.classList.add('hidden');
+                DOM.screenQuiz.classList.remove('hidden');
+                DOM.screenQuiz.classList.add('flex', 'fade-in-up');
+                
+                if (typeof updateDimIndicators === 'function') updateDimIndicators();
+                if (typeof renderQuestion === 'function') renderQuestion();
+                
+            } catch (err) {
+                console.error("startQuiz Error:", err);
+                alert("啟動發生錯誤：" + err.message + "\n" + err.stack.substring(0, 100));
+            }
+            
             if (typeof EventBus !== 'undefined') EventBus.emit('quiz-started', { totalQuestions: QuizState.shuffledQuestions.length });
         };
 
@@ -1240,7 +1300,11 @@
             DOM.startBtn.classList.add('opacity-70', 'cursor-not-allowed');
             DOM.resumeBtn.classList.add('hidden');
 
-            QuizState = createFreshState();
+            try {
+                QuizState = typeof window.createFreshState === 'function' ? window.createFreshState() : (typeof createFreshState === 'function' ? createFreshState() : { currentStep: 0, shuffledQuestions: [], scores: {E:0,I:0,S:0,N:0,T:0,F:0,J:0,P:0,A:0,O:0,H:0,C:0}, history: [], times: {}, counts: {} });
+            } catch(e) {
+                QuizState = { currentStep: 0, shuffledQuestions: [], scores: {E:0,I:0,S:0,N:0,T:0,F:0,J:0,P:0,A:0,O:0,H:0,C:0}, history: [], times: {}, counts: {} };
+            }
             window.QuizState = QuizState;
             QuizState.finalUserName = userName !== "" ? userName : "匿名";
             QuizState.shuffledQuestions = questions;
@@ -1486,7 +1550,11 @@
             }
             
             clearProgress();
-            QuizState = createFreshState();
+            try {
+                QuizState = typeof window.createFreshState === 'function' ? window.createFreshState() : (typeof createFreshState === 'function' ? createFreshState() : { currentStep: 0, shuffledQuestions: [], scores: {E:0,I:0,S:0,N:0,T:0,F:0,J:0,P:0,A:0,O:0,H:0,C:0}, history: [], times: {}, counts: {} });
+            } catch(e) {
+                QuizState = { currentStep: 0, shuffledQuestions: [], scores: {E:0,I:0,S:0,N:0,T:0,F:0,J:0,P:0,A:0,O:0,H:0,C:0}, history: [], times: {}, counts: {} };
+            }
             window.QuizState = QuizState;
             
             DOM.startBtn.disabled = false;
